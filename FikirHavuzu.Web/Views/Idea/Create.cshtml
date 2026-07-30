@@ -1,0 +1,60 @@
+﻿@model IdeaCreateDto
+
+@{
+    ViewData["Title"] = "Yeni Fikir Ekle";
+}
+
+<div class="container mt-3">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white text-white">
+            <h4 class="mb-0 text-primary">Yeni Fikir Ekle</h4>
+        </div>
+        <div class="card-body">
+            <form asp-controller="Idea" asp-action="Create" method="post" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label fw-bold"></label>
+                    <input asp-for="Title" class="form-control" placeholder="Fikrinizi tek cümleyle özetleyin..." />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="CategoryId" class="form-label fw-bold"></label>
+                    <select asp-for="CategoryId" class="form-select" asp-items="@ViewBag.Categories">
+                        <option value="">-- Lütfen Bir Kategori Seçiniz --</option>
+                    </select>
+                    <span asp-validation-for="CategoryId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="TargetedBenefit" class="form-label fw-bold"></label>
+                    <textarea asp-for="TargetedBenefit" class="form-control" rows="2" placeholder="Bu fikir kuruma nasıl bir fayda sağlayacak? (Örn: Maliyet düşüşü, hızlanma)"></textarea>
+                    <span asp-validation-for="TargetedBenefit" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Description" class="form-label fw-bold"></label>
+                    <textarea asp-for="Description" class="form-control" rows="5" placeholder="Fikrinizin detaylarını, nasıl uygulanacağını adım adım anlatın..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Destekleyici Belgeler (İsteğe Bağlı)</label>
+                    <input type="file" name="documents" class="form-control" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+                    <div class="form-text text-muted">
+                        Maksimum 5MB büyüklüğünde PDF, Word veya Görsel dosyaları yükleyebilirsiniz. Birden fazla dosya seçebilirsiniz.
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-danger me-md-2">İptal</a>
+                    <button type="submit" class="btn btn-outline-success">Fikri Gönder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial"/>
+}

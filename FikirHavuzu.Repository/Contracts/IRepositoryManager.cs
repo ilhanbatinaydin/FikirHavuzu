@@ -7,5 +7,7 @@
         IUserRepository User { get; }
         IEvaluationRepository Evaluation { get; }
         void Save();
+
+        Task SaveAsync();
     }
 }

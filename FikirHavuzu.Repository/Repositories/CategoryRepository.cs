@@ -8,6 +8,7 @@ namespace FikirHavuzu.Repository.Repositories
     {
         public CategoryRepository(AppDbContext context) : base(context)
         {
+
         }
     }
 }

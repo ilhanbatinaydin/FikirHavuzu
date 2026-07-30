@@ -35,8 +35,7 @@ namespace FikirHavuzu.Repository.Context
                 .HasForeignKey(e => e.IdeaId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.ApplyConfiguration(new CategoryConfig());
-            modelBuilder.ApplyConfiguration(new PermissionConfig());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         }
     }
 }

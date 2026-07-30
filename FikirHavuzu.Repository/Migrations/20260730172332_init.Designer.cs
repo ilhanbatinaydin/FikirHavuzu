@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FikirHavuzu.Repository.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260727120948_SeedInitialCreate")]
-    partial class SeedInitialCreate
+    [Migration("20260730172332_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -106,7 +106,7 @@ namespace FikirHavuzu.Repository.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
@@ -131,6 +131,108 @@ namespace FikirHavuzu.Repository.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Ideas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1095),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 1",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1112),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 2",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CategoryId = 1,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1113),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 3",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1114),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 4",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1115),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 5",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1116),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 6",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CategoryId = 2,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1116),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 7",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1117),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 8",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1118),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 9",
+                            UserId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CategoryId = 3,
+                            CreatedAt = new DateTime(2026, 7, 30, 20, 23, 32, 280, DateTimeKind.Local).AddTicks(1119),
+                            Description = "Bu mimariye geçiş yapmak daha iyi olur",
+                            TargetedBenefit = "Mimari iyileştirmesi",
+                            Title = "ASP.NET CORE MİMARİSİ 10",
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("FikirHavuzu.Entity.Entities.IdeaDocument", b =>
@@ -183,38 +285,69 @@ namespace FikirHavuzu.Repository.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "Kullanıcı ekleme, güncelleme, pasife alma ve listeleme yetkisi.",
-                            Name = "User.Manage"
+                            Description = "Fikirleri görüntüleme yetkisi.",
+                            Name = "Idea.View"
                         },
                         new
                         {
                             Id = 2,
-                            Description = "Yeni fikir/öneri kaydı oluşturma yetkisi.",
+                            Description = "Fikir oluşturma yetkisi.",
                             Name = "Idea.Create"
                         },
                         new
                         {
                             Id = 3,
-                            Description = "Fikirleri listeleme ve filtreleme yetkisi.",
-                            Name = "Idea.View"
-                        },
-                        new
-                        {
-                            Id = 4,
                             Description = "Fikirleri karara bağlama, açıklama yazma ve puanlama yetkisi.",
                             Name = "Idea.Evaluate"
                         },
                         new
                         {
-                            Id = 5,
-                            Description = "Diğer kullanıcılara yetki atama yetkisi.",
-                            Name = "Permission.Grant"
+                            Id = 4,
+                            Description = "Kullanıcı ekleme, güncelleme, pasife alma ve listeleme yetkisi.",
+                            Name = "User.Manage"
                         },
                         new
                         {
-                            Id = 6,
-                            Description = "Diğer kullanıcılardan yetki kaldırma yetkisi.",
-                            Name = "Permission.Revoke"
+                            Id = 5,
+                            Description = "Kullanıcılara yetki atama ve kaldırma yetkisi.",
+                            Name = "Permission.Manage"
+                        });
+                });
+
+            modelBuilder.Entity("FikirHavuzu.Entity.Entities.PermissionDependency", b =>
+                {
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RequiredPermissionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PermissionId", "RequiredPermissionId");
+
+                    b.HasIndex("RequiredPermissionId");
+
+                    b.ToTable("PermissionDependency");
+
+                    b.HasData(
+                        new
+                        {
+                            PermissionId = 2,
+                            RequiredPermissionId = 1
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RequiredPermissionId = 2
+                        },
+                        new
+                        {
+                            PermissionId = 3,
+                            RequiredPermissionId = 1
+                        },
+                        new
+                        {
+                            PermissionId = 5,
+                            RequiredPermissionId = 4
                         });
                 });
 
@@ -260,29 +393,70 @@ namespace FikirHavuzu.Repository.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Email = "admin@fikirhavuzu.com",
+                            FirstName = "Sistem",
+                            IdentityNumber = "11111111111",
+                            IsActive = true,
+                            LastName = "Yöneticisi",
+                            PasswordHash = "$2a$11$oRdgtBQSThMN2hx/.jGh0ezPKyRo2mY.tHPkwbO68mI.GpGijiiYO",
+                            PhoneNumber = "05555555555",
+                            RegistrationNumber = "0001"
+                        });
                 });
 
             modelBuilder.Entity("FikirHavuzu.Entity.Entities.UserPermission", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<int>("UserId")
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("PermissionId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("Id")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("UserId", "PermissionId");
 
                     b.HasIndex("PermissionId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("UserPermissions");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            PermissionId = 1,
+                            Id = 0
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            PermissionId = 2,
+                            Id = 0
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            PermissionId = 3,
+                            Id = 0
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            PermissionId = 4,
+                            Id = 0
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            PermissionId = 5,
+                            Id = 0
+                        });
                 });
 
             modelBuilder.Entity("FikirHavuzu.Entity.Entities.Evaluation", b =>
@@ -334,6 +508,25 @@ namespace FikirHavuzu.Repository.Migrations
                     b.Navigation("Idea");
                 });
 
+            modelBuilder.Entity("FikirHavuzu.Entity.Entities.PermissionDependency", b =>
+                {
+                    b.HasOne("FikirHavuzu.Entity.Entities.Permission", "Permission")
+                        .WithMany("RequiredPermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("FikirHavuzu.Entity.Entities.Permission", "RequiredPermission")
+                        .WithMany("DependentPermissions")
+                        .HasForeignKey("RequiredPermissionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("RequiredPermission");
+                });
+
             modelBuilder.Entity("FikirHavuzu.Entity.Entities.UserPermission", b =>
                 {
                     b.HasOne("FikirHavuzu.Entity.Entities.Permission", "Permission")
@@ -367,6 +560,10 @@ namespace FikirHavuzu.Repository.Migrations
 
             modelBuilder.Entity("FikirHavuzu.Entity.Entities.Permission", b =>
                 {
+                    b.Navigation("DependentPermissions");
+
+                    b.Navigation("RequiredPermissions");
+
                     b.Navigation("UserPermissions");
                 });
 

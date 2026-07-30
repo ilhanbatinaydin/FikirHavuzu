@@ -1,32 +1,41 @@
+using FikirHavuzu.Entity.RequestParameters;
+using FikirHavuzu.Service.Contracts;
 using FikirHavuzu.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace FikirHavuzu.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IServiceManager _manager;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IServiceManager manager)
         {
-            _logger = logger;
+            _manager = manager;
         }
 
-        public IActionResult Index()
+        [Authorize(Policy = "IdeaViewPolicy")]
+        public IActionResult Index(IdeaRequestParameters p)
         {
-            return View();
-        }
+            var ideas = _manager.IdeaService.GetAllIdeasWithDetails(p, trackChanges: false);
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+            var totalCount = _manager.IdeaService.GetCount(p);
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var pagination = new Pagination()
+            {
+                CurrentPage = p.PageNumber,
+                ItemsPerPage = p.PageSize,
+                TotalItems = totalCount
+            };
+
+            var viewModel = new IdeaListViewModel()
+            {
+                Ideas = ideas,
+                Pagination = pagination
+            };
+
+            return View(viewModel);
         }
     }
 }

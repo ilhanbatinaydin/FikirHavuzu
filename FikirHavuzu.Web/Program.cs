@@ -1,4 +1,5 @@
 using FikirHavuzu.Web.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace FikirHavuzu.Web
 {
@@ -9,9 +10,14 @@ namespace FikirHavuzu.Web
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddAutoMapper(typeof(Program));
+
             builder.Services.ConfigureDbContext(builder.Configuration);
-            builder.Services.ConfigureRepositoryManager();
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            builder.Services.ConfigureRepositoryRegistration();
+            builder.Services.ConfigureServiceRegistration();
+            builder.Services.ConfigureCustomAuthentication();
+            builder.Services.ConfigureCustomAuthorization();
+            builder.Services.ConfigureRouting();
 
             var app = builder.Build();
 
@@ -27,6 +33,7 @@ namespace FikirHavuzu.Web
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -1,6 +1,7 @@
-﻿@{
+﻿@model IdeaListViewModel
+@{
     ViewData["Title"] = "Ana Sayfa";
-    bool hasIdeaPermission = true;
+    bool hasCreatePermission = User.HasClaim("Permission", "Idea.Create");
 }
 
 <div class="row">
@@ -18,166 +19,58 @@
     </div>
 </div>
 
-    @if (hasIdeaPermission)
-    {
+
         
     
-        <div class="row">
-            <!-- Sol Taraf: Filtreler (3 Kolon) -->
-            <div class="col-md-3">
-                <div class="p-3 bg-white rounded-3 shadow-sm border">
-                    <h5 class="fw-bold text-primary border-bottom pb-3">
-                        <i class="fa-solid fa-filter"></i>
-                        Filtreler
-                    </h5>
+<div class="row">
+    <div class="col-md-3">
+        @await Component.InvokeAsync("IdeaFilterMenu")
+    </div>
 
-                    <form method="get" asp-controller="Home" asp-action="Index">
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Arama</label>
-                            <input type="text" name="searchQuery" class="form-control form-control-sm" placeholder="Fikir içeriği..." />
-                        </div>
+    <div class="col-md-9">
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Kategori</label>
-                            <select name="category" class="form-select form-select-sm">
-                                <option value="">Tümü</option>
-                                <option value="Ürün">Ürün</option>
-                                <option value="Süreç">Süreç</option>
-                                <option value="Hizmet">Hizmet</option>
-                            </select>
-                        </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-secondary">
+                <i class="fa-solid fa-list"></i>
+                Fikir Listesi
+            </h5>
+            @if (hasCreatePermission)
+            {
+                <a asp-controller="Idea" asp-action="Create" class="btn btn-outline-success btn-sm fw-bold shadow-sm">
+                    <i class="fa-solid fa-plus"></i> Yeni Fikir Ekle
+                </a>
+            }
+        </div>
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Tarih</label>
-                            <input type="date" name="filterDate" class="form-control form-control-sm text-muted">
-                        </div>
+        <div class="row g-3">
 
-                        <div class="mb-3">
-                            <label class="form-label text-muted small fw-bold">Ekleyen Kişi</label>
-                            <input type="text" name="userName" class="form-control form-control-sm" placeholder="Ad soyad...">
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-outline-primary btn-sm fw-bold">Uygula</button>
-                            <a href="/Home/Index" class="btn btn-outline-danger btn-sm">Sıfırla</a>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Sağ Taraf: Fikir Kartları (9 Kolon) -->
-            <div class="col-md-9">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold text-secondary">
-                        <i class="fa-solid fa-list"></i>
-                        Fikir Listesi
-                    </h5>
-                    <a asp-controller="Idea" asp-action="Create" class="btn btn-outline-success btn-sm fw-bold shadow-sm">
-                        <i class="fa-solid fa-plus"></i> Yeni Fikir Ekle
-                    </a>
-                </div>
-
-                <div class="row g-3">
-
-                    <!-- Örnek Kart 1 (Süreç) -->
-                    <div class="col-md-6 col-xl-4">
-                        <div class="card h-100 shadow-sm border border-light-subtle bg-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-warning text-dark">Süreç</span>
-                                    <small class="text-muted"><i class="fa-regular fa-calendar me-1"></i>28.07.2026</small>
-                                </div>
-                                <h6 class="card-title fw-bold text-dark mt-3">Haftalık Raporlama Otomasyonu</h6>
-                                <!-- Uzun metinleri 3 satırda kesen özel stil -->
-                                <p class="card-text text-secondary small" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                    Cuma günleri manuel hazırlanan departman raporlarının C# servisi ile otomatik oluşturulup e-posta ile yöneticilere gönderilmesi.
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center pb-3 pt-0">
-                                <small class="text-muted"><i class="fa-regular fa-user me-1"></i>Ahmet Yılmaz</small>
-                                <a asp-controller="Idea" asp-action="Details" asp-route-id="1" class="btn btn-sm btn-outline-primary">
-                                    Detay <i class="fa-solid fa-arrow-right ms-1"></i>
-                                </a>
-                            </div>
-                        </div>
+            @if (Model.Ideas != null && Model.Ideas.Any())
+            {
+                @foreach (var idea in Model.Ideas)
+                {
+                    <partial name="_IdeaCard" model="@idea" />
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center py-4 shadow-sm">
+                        <i class="fa-solid fa-circle-info me-2"></i> Sistemde henüz kayıtlı bir fikir bulunmuyor veya aramanıza uygun sonuç çıkmadı.
                     </div>
-
-                    <!-- Örnek Kart 2 (Ürün) -->
-                    <div class="col-md-6 col-xl-4">
-                        <div class="card h-100 shadow-sm border border-light-subtle bg-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-success">Ürün</span>
-                                    <small class="text-muted"><i class="fa-regular fa-calendar me-1"></i>27.07.2026</small>
-                                </div>
-                                <h6 class="card-title fw-bold text-dark mt-3">Mobil Müşteri Paneli</h6>
-                                <p class="card-text text-secondary small" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                    Müşterilerin talep durumlarını anlık takip edebilmeleri için Flutter tabanlı çapraz platform bir mobil bildirim modülü eklenmesi.
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center pb-3 pt-0">
-                                <small class="text-muted"><i class="fa-regular fa-user me-1"></i>Mehmet Kaya</small>
-                                <a asp-controller="Idea" asp-action="Details" asp-route-id="2" class="btn btn-sm btn-outline-primary">
-                                    Detay <i class="fa-solid fa-arrow-right ms-1"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Örnek Kart 3 (Hizmet) -->
-                    <div class="col-md-6 col-xl-4">
-                        <div class="card h-100 shadow-sm border border-light-subtle bg-white">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-info text-white">Hizmet</span>
-                                    <small class="text-muted"><i class="fa-regular fa-calendar me-1"></i>26.07.2026</small>
-                                </div>
-                                <h6 class="card-title fw-bold text-dark mt-3">VIP Müşteri Destek Hattı</h6>
-                                <p class="card-text text-secondary small" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                    Yüksek hacimli ve kurumsal müşterilerimize özel, bekleme süresi olmayan direkt bir telefon destek hattı oluşturulması.
-                                </p>
-                            </div>
-                            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center pb-3 pt-0">
-                                <small class="text-muted"><i class="fa-regular fa-user me-1"></i>Ayşe Demir</small>
-                                <a asp-controller="Idea" asp-action="Details" asp-route-id="3" class="btn btn-sm btn-outline-primary">
-                                    Detay <i class="fa-solid fa-arrow-right ms-1"></i>
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-
                 </div>
+            }
 
-                <!-- SAYFALAMA (PAGINATION) ALANI -->
-                <!-- Sayfalama tüm sayfanın değil, sadece sağdaki listeye ait olduğu için col-9'un en altına gelir -->
-                <div class="d-flex justify-content-center my-5">
-                    <ul class="pagination pagination-sm shadow-sm">
-                        <li class="page-item disabled"><a class="page-link" href="#">Önceki</a></li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#">Sonraki</a></li>
-                    </ul>
-                </div>
+        </div>
 
+        <div class="d-flex justify-content-center my-5">
+            <div page-model="@Model?.Pagination"
+                    page-action="Index"
+                    page-classes-enabled="true"
+                    page-class="btn shadow-sm"
+                    page-class-normal="btn-outline-primary"
+                    page-class-selected="btn-primary"
+                    class="btn-group">
             </div>
         </div>
-    }
-    else
-    {
-        <!-- Yetkisiz Kullanıcı Uyarı Alanı -->
-        <div class="col-12">
-            <div class="text-center alert alert-warning border-warning p-3 shadow-sm" role="alert">
-                <h3 class="fw-bold">
-                    <i class="fa-solid fa-shield-halved fs-1 text-warning"></i>
-                    Erişim Sınırlaması
-                </h3>
-                <div>
-                    <p class="text-muted">
-                        Sistemdeki fikirleri görüntüleme veya yeni fikir ekleme yetkiniz bulunmamaktadır.
-                    </p>
-                </div>
-            </div>
-        </div>
-    }
-</div>
+    </div>
+</div>   

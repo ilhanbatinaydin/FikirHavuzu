@@ -1,0 +1,89 @@
+﻿using FikirHavuzu.Entity.Dtos.Auth;
+using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Web.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+
+namespace FikirHavuzu.Web.Controllers
+{
+    public class AuthController : Controller
+    {
+        private readonly IServiceManager _manager;
+        public AuthController(IServiceManager manager)
+        {
+            _manager = manager;
+        }
+
+        [HttpGet]
+        public IActionResult Login([FromQuery(Name = "ReturnUrl")] string returnUrl = "/")
+        {
+            return View(new LoginViewModel { ReturnUrl = returnUrl });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login([FromForm] LoginViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var loginDto = new UserLoginDto
+                {
+                    Email = model.Email,
+                    Password=model.Password
+                };
+
+                var userResponse = await _manager.AuthService.LoginAsync(loginDto);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, userResponse.Id.ToString()),
+                    new Claim(ClaimTypes.Name, userResponse.FirstName),
+                    new Claim(ClaimTypes.Surname, userResponse.LastName),
+                    new Claim(ClaimTypes.Email, userResponse.Email)
+                };
+
+                foreach (var permission in userResponse.Permissions)
+                {
+                    claims.Add(new Claim("Permission", permission));
+                }
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+                await HttpContext.SignInAsync(
+                    CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(claimsIdentity));
+
+                if (Url.IsLocalUrl(model.ReturnUrl))
+                {
+                    return Redirect(model.ReturnUrl);
+                }
+
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+        }
+        public async Task<IActionResult> Logout([FromQuery(Name = "ReturnUrl")] string returnUrl = "/")
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Redirect(returnUrl);
+        }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+    }
+}

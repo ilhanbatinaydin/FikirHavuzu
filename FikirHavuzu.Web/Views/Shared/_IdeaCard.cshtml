@@ -1,0 +1,50 @@
+﻿@model IdeaDto
+
+@{
+    string badgeColor = Model.CategoryName switch
+    {
+        "Ürün" => "bg-success text-white",
+        "Hizmet" => "bg-warning text-dark",
+        "Süreç" => "bg-danger text-white",
+        _ => "bg-secondary text-white"
+    };
+}
+
+<div class="col-md-6 col-xl-4">
+    <div class="card shadow-sm border border-light-subtle bg-white d-flex flex-column" style="height: 280px;">
+
+        <div class="card-body flex-grow-1 d-flex flex-column">
+
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="badge @badgeColor">@Model.CategoryName</span>
+
+                <small class="text-muted">
+                    <i class="fa-regular fa-calendar me-1"></i>@Model.CreatedAt.ToString("dd.MM.yyyy")
+                </small>
+            </div>
+
+            <h6 class="card-title fw-bold text-dark mb-1" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                @Model.Title
+            </h6>
+
+            <p class="text-success small fw-semibold mb-2" style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                <i class="fa-solid fa-bullseye me-1"></i>@Model.TargetedBenefit
+            </p>
+
+            <p class="card-text text-secondary small mb-0" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                @Model.Description
+            </p>
+
+        </div>
+
+        <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center pb-3 pt-0 mt-auto">
+            <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+                <i class="fa-regular fa-user me-1"></i>@Model.AddedByUserFullName
+            </small>
+
+            <a asp-controller="Idea" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary text-nowrap">
+                Detay <i class="fa-solid fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    </div>
+</div>

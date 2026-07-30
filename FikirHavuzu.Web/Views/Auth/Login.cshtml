@@ -1,0 +1,60 @@
+﻿@model LoginViewModel
+@{
+    ViewData["Title"] = "Giriş Yap";
+    Layout = "~/Views/Shared/_AuthLayout.cshtml";
+}
+
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-11 col-sm-8 col-md-6 col-lg-4">
+
+        <div class="p-3 bg-white rounded-3 shadow-sm border border-light-subtle">
+
+            <div class="text-center mb-3">
+                <h2 class="text-primary fw-bold mb-3">
+                    <i class="fa-solid fa-lightbulb text-warning me-2"></i>
+                    Fikir Havuzu
+                </h2>
+                <p class="text-muted small">Devam etmek için lütfen giriş yapın</p>
+            </div>
+
+            <div>
+                <div class="text-danger" asp-validation-summary="All"></div>
+            </div>
+            <!-- Form -->
+            <form method="post" asp-controller="Auth" asp-action="Login">
+
+                <input type="hidden" asp-for="ReturnUrl" />
+                <!-- Kullanıcı Adı / E-posta -->
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label text-muted small fw-bold"></label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-light text-muted border-light-subtle">
+                            <i class="fa-solid fa-user"></i>
+                        </span>
+                        <input type="text" name="Email" class="form-control border-light-subtle" placeholder="E-posta adresinizi girin" required />
+                    </div>
+                </div>
+
+                <!-- Şifre -->
+                <div class="mb-5">
+                    <label asp-for="Password" class="form-label text-muted small fw-bold"></label>
+                    <div class="input-group shadow-sm">
+                        <span class="input-group-text bg-light text-muted border-light-subtle">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" name="Password" class="form-control border-light-subtle" placeholder="Şifrenizi girin" required />
+                    </div>
+                </div>
+
+                <!-- Giriş Butonu -->
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary fw-bold shadow-sm py-2">
+                        Giriş Yap <i class="fa-solid fa-right-to-bracket ms-1"></i>
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>

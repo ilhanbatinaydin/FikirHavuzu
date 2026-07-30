@@ -1,4 +1,6 @@
-﻿namespace FikirHavuzu.Entity.Entities
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace FikirHavuzu.Entity.Entities
 {
     public class Idea
     {
@@ -6,7 +8,7 @@
         public string Title { get; set; } = string.Empty;
         public string TargetedBenefit { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public DateTime CreatedDate { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public int UserId { get; set; }
         public User User { get; set; } = null!;
         public int CategoryId { get; set; }
