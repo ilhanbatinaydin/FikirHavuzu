@@ -1,0 +1,137 @@
+﻿@model UserListViewModel
+@{
+    ViewData["Title"] = "Kullanıcı Yönetimi";
+    bool hasPermissionManage = User.HasClaim("Permission", "Permission.Manage");
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="my-3 p-3 bg-white rounded-3 shadow-sm border container-fluid text-center">
+            <h1 class="text-primary fw-bold">
+                <i class="fa-solid fa-users-gear text-warning"></i>
+                Kullanıcı Yönetimi
+            </h1>
+            <p class="text-muted">
+                Sistemdeki tüm kullanıcı hesaplarını buradan yönetebilir, yeni kullanıcılar ekleyebilir ve yetkilendirme süreçlerini yürütebilirsiniz.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        @await Component.InvokeAsync("UserFilterMenu")
+    </div>
+
+    <div class="col-md-9">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-secondary">
+                <i class="fa-solid fa-list"></i>
+                Kullanıcı Listesi
+            </h5>
+
+            <a asp-controller="User" asp-action="Create" class="btn btn-outline-success btn-sm fw-bold shadow-sm">
+                <i class="fa-solid fa-user-plus"></i> Yeni Kullanıcı Ekle
+            </a>
+        </div>
+
+        <div class="row g-3">
+            @if (Model.Users != null && Model.Users.Any())
+            {
+                @foreach (var user in Model.Users)
+                {
+                    <div class="col-12">
+                        <div class="card shadow-sm border-0 border-start border-4 @(user.IsActive ? "border-success" : "border-danger")">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+
+                                    <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                                        <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                                            <div class="bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center me-3 border" style="width: 50px; height: 50px;">
+                                                <i class="fa-solid fa-user fs-4"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="fw-bold mb-1">@user.FirstName @user.LastName</h6>
+                                                @if (user.IsActive)
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill">Aktif</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill">Pasif</span>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-5 mb-3 mb-md-0">
+                                        <div class="row text-muted small mb-2">
+                                            <div class="col-6 mb-1">
+                                                <i class="fa-solid fa-id-card me-1"></i> <strong>T.C.:</strong> @user.IdentityNumber
+                                            </div>
+                                            <div class="col-6 mb-1">
+                                                <i class="fa-solid fa-envelope me-1"></i> @user.Email
+                                            </div>
+                                            <div class="col-6">
+                                                <i class="fa-solid fa-hashtag me-1"></i> <strong>Sicil:</strong> @user.RegistrationNumber
+                                            </div>
+                                            <div class="col-6">
+                                                <i class="fa-solid fa-phone me-1"></i> @user.PhoneNumber
+                                            </div>
+                                        </div>
+
+                                        <div class="small">
+                                            <strong class="text-secondary"><i class="fa-solid fa-shield-halved text-warning me-1"></i> Yetkiler:</strong>
+                                            @if (user.Permissions != null && user.Permissions.Any())
+                                            {
+                                                <span class="text-muted">@string.Join(", ", user.Permissions)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted fst-italic">Yetki atanmamış</span>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3 text-center text-md-end">
+                                        <div class="d-grid gap-2">
+                                            <a asp-controller="User" asp-action="Update" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fa-solid fa-pen-to-square"></i> Güncelle
+                                            </a>
+                                            @if (hasPermissionManage)
+                                            {
+                                                <a asp-controller="User" asp-action="AssignPermissions" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
+                                                    <i class="fa-solid fa-key"></i> Yetkilendir
+                                                </a>
+                                            }
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12">
+                    <div class="alert alert-info text-center py-4 shadow-sm">
+                        <i class="fa-solid fa-circle-info me-2"></i> Sistemde henüz kayıtlı bir kullanıcı bulunmuyor veya aramanıza uygun sonuç çıkmadı.
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="d-flex justify-content-center my-5">
+            <div page-model="@Model?.Pagination"
+                 page-action="Index"
+                 page-classes-enabled="true"
+                 page-class="btn shadow-sm"
+                 page-class-normal="btn-outline-primary"
+                 page-class-selected="btn-primary"
+                 class="btn-group">
+            </div>
+        </div>
+    </div>
+</div>

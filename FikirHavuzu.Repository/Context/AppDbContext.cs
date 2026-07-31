@@ -17,6 +17,7 @@ namespace FikirHavuzu.Repository.Context
         public DbSet<Idea> Ideas { get; set; }
         public DbSet<IdeaDocument> IdeaDocuments { get; set; }
         public DbSet<Evaluation> Evaluations { get; set; }
+        public DbSet<PermissionDependency> PermissionDependencies { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

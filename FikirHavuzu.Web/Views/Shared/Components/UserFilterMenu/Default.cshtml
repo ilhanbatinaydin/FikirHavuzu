@@ -1,0 +1,52 @@
+﻿@model IEnumerable<PermissionDto>
+
+<div class="p-3 bg-white rounded-3 shadow-sm border">
+    <h5 class="fw-bold text-primary border-bottom pb-3">
+        <i class="fa-solid fa-filter"></i>
+        Filtreler
+    </h5>
+
+    <form method="get" asp-controller="User" asp-action="Index">
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Ad Soyad</label>
+            <input type="text" name="fullName" value="@Context.Request.Query["fullName"]" class="form-control form-control-sm" placeholder="Ad Soyad ..." />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">T.C.</label>
+            <input type="text" name="identityNumber" value="@Context.Request.Query["identityNumber"]" class="form-control form-control-sm" placeholder="T.C. ..." />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Yetkiler</label>
+            <select name="permissionId" class="form-select form-select-sm">
+                <option value="">Tümü</option>
+                @foreach (PermissionDto permission in Model)
+                {
+                    if (Context.Request.Query["permissionId"] == permission.Id.ToString())
+                    {
+                        <option value="@permission.Id" selected>@permission.Name</option>
+                    }
+                    else
+                    {
+                        <option value="@permission.Id">@permission.Name</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-bold">Durum</label>
+            <select name="isActive" class="form-select form-select-sm">
+                <option value="">Tümü</option>
+                <option value="true" selected="@(Context.Request.Query["isActive"] == "true" ? "selected" : null)">Aktif</option>
+                <option value="false" selected="@(Context.Request.Query["isActive"] == "false" ? "selected" : null)">Pasif</option>
+            </select>
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-outline-primary btn-sm fw-bold">Uygula</button>
+            <a href="/User/Index" class="btn btn-outline-danger btn-sm">Sıfırla</a>
+        </div>
+    </form>
+</div>

@@ -28,6 +28,7 @@ namespace FikirHavuzu.Web.Infrastructure.Extensions
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IIdeaRepository, IdeaRepository>();
             services.AddScoped<IEvaluationRepository, EvaluationRepository>();
+            services.AddScoped<IPermissionRepository, PermissionRepository>();
         }
 
         public static void ConfigureServiceRegistration(this IServiceCollection services)
@@ -36,6 +37,8 @@ namespace FikirHavuzu.Web.Infrastructure.Extensions
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<IIdeaService, IdeaService>();
+            services.AddScoped<IPermissionService, PermissionService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         public static void ConfigureCustomAuthentication(this IServiceCollection services)

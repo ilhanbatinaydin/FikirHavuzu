@@ -7,5 +7,9 @@
         ICategoryService CategoryService { get; }
 
         IIdeaService IdeaService { get; }
+
+        IPermissionService PermissionService { get; }
+
+        IUserService UserService { get; }
     }
 }

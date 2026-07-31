@@ -10,11 +10,17 @@ namespace FikirHavuzu.Service.Services
 
         private readonly IIdeaService _ideaService;
 
-        public ServiceManager(IAuthService authService, ICategoryService categoryService, IIdeaService ideaService)
+        private readonly IUserService _userService;
+
+        private readonly IPermissionService _permissionService;
+
+        public ServiceManager(IAuthService authService, ICategoryService categoryService, IIdeaService ideaService, IUserService userService, IPermissionService permissionService)
         {
             _authService = authService;
             _categoryService = categoryService;
             _ideaService = ideaService;
+            _userService = userService;
+            _permissionService = permissionService;
         }
 
         public IAuthService AuthService => _authService;
@@ -22,5 +28,9 @@ namespace FikirHavuzu.Service.Services
         public ICategoryService CategoryService => _categoryService;
 
         public IIdeaService IdeaService => _ideaService;
+
+        public IUserService UserService => _userService;
+
+        public IPermissionService PermissionService => _permissionService;
     }
 }
