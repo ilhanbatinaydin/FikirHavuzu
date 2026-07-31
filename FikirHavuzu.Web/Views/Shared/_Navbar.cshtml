@@ -19,14 +19,6 @@
                         <a class="nav-link" aria-current="page" asp-controller="User" asp-action="Index">Kullanıcı Yönetimi</a>
                     </li>
                 }
-
-                @if (User.Identity.IsAuthenticated && User.HasClaim("Permission", "Permission.Manage"))
-                {
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" asp-controller="Permission" asp-action="Index">Yetki Yönetimi</a>
-                    </li>
-                }
-
             </ul>
 
             <ul class="navbar-nav">

@@ -5,9 +5,7 @@ namespace FikirHavuzu.Repository.Contracts
 {
     public interface IIdeaRepository : IRepositoryBase<Idea>
     {
-        IQueryable<Idea> GetAllIdeas(bool trackChanges);
-        IQueryable<Idea> GetAllIdeasWithDetails(IdeaRequestParameters p, bool trackChanges);
-        Idea? GetOneIdea(int id, bool trackChanges);
-        int GetCount(IdeaRequestParameters p);
+        Task<IEnumerable<Idea>> GetAllIdeasWithDetailsAsync(IdeaRequestParameters p, bool trackChanges);
+        Task<int> GetCountAsync(IdeaRequestParameters p);
     }
 }

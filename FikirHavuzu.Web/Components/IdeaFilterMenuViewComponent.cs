@@ -12,9 +12,10 @@ namespace FikirHavuzu.Web.Components
             _manager= manager;
         }
 
-        public IViewComponentResult Invoke()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
-            var categories=_manager.CategoryService.GetAllCategories(false);
+            var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
+
             return View(categories);
         }
     }

@@ -10,11 +10,9 @@ namespace FikirHavuzu.Service.Contracts
 {
     public interface IIdeaService
     {
-        IEnumerable<IdeaDto> GetAllIdeasWithDetails(IdeaRequestParameters p, bool trackChanges);
+        Task<IEnumerable<IdeaDto>> GetAllIdeasWithDetailsAsync(IdeaRequestParameters p, bool trackChanges);
 
-        IEnumerable<IdeaDto> GetAllIdeas(bool trackChanges);
-
-        int GetCount(IdeaRequestParameters p);
+        Task<int> GetCountAsync(IdeaRequestParameters p);
 
         Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId, bool trackChanges);
     }

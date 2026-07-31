@@ -28,6 +28,22 @@ namespace FikirHavuzu.Web.Infrastructure.Mapper
                     opt.MapFrom(src => src.PhoneNumber ?? "-"))
                 .ForMember(dest => dest.Permissions, opt =>
                     opt.MapFrom(src => src.UserPermissions.Select(up => up.Permission.Name).ToList()));
+
+            CreateMap<UserCreateDto, User>();
+
+            CreateMap<UserUpdateDto, User>()
+                .ForMember(dest => dest.PasswordHash, opt => opt.Ignore());
+
+            CreateMap<User, UserUpdateDto>()
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.ConfirmPassword, opt => opt.Ignore());
+
+            CreateMap<Permission, PermissionWithDependenciesDto>()
+                .ForMember(dest => dest.RequiredPermissionIds, opt => opt.MapFrom(src =>
+                    src.RequiredPermissions.Select(dp => dp.RequiredPermissionId).ToList()
+                ));
+
+            CreateMap<User, UserPermissionAssignmentDto>();
         }
     }
 }

@@ -100,7 +100,7 @@
                                             </a>
                                             @if (hasPermissionManage)
                                             {
-                                                <a asp-controller="User" asp-action="AssignPermissions" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
+                                                <a asp-controller="User" asp-action="ManagePermissions" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
                                                     <i class="fa-solid fa-key"></i> Yetkilendir
                                                 </a>
                                             }

@@ -4,6 +4,6 @@ namespace FikirHavuzu.Repository.Contracts
 {
     public interface ICategoryRepository : IRepositoryBase<Category>
     {
-        
+        Task<IEnumerable<Category>> GetAllCategoriesAsync(bool trackChanges);
     }
 }

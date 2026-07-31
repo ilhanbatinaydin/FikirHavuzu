@@ -20,28 +20,16 @@ namespace FikirHavuzu.Service.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<IdeaDto> GetAllIdeasWithDetails(IdeaRequestParameters p, bool trackChanges)
+        public async Task<IEnumerable<IdeaDto>> GetAllIdeasWithDetailsAsync(IdeaRequestParameters p, bool trackChanges)
         {
-            var ideas = _manager.Idea
-                .GetAllIdeasWithDetails(p, trackChanges)
-                .ToList();
-
-            var ideaDtos = _mapper.Map<IEnumerable<IdeaDto>>(ideas);
-
-            return ideaDtos;
-        }
-
-        public IEnumerable<IdeaDto> GetAllIdeas(bool trackChanges)
-        {
-
-            var ideas = _manager.Idea.FindAll(trackChanges);
+            var ideas = await _manager.Idea.GetAllIdeasWithDetailsAsync(p, trackChanges);
 
             return _mapper.Map<IEnumerable<IdeaDto>>(ideas);
         }
 
-        public int GetCount(IdeaRequestParameters p)
+        public async Task<int> GetCountAsync(IdeaRequestParameters p)
         {
-            return _manager.Idea.GetCount(p);
+            return await _manager.Idea.GetCountAsync(p);
         }
 
         public async Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId, bool trackChanges)

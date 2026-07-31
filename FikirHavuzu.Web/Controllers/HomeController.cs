@@ -16,11 +16,10 @@ namespace FikirHavuzu.Web.Controllers
         }
 
         [Authorize(Policy = "IdeaViewPolicy")]
-        public IActionResult Index(IdeaRequestParameters p)
+        public async Task<IActionResult> Index(IdeaRequestParameters p)
         {
-            var ideas = _manager.IdeaService.GetAllIdeasWithDetails(p, trackChanges: false);
-
-            var totalCount = _manager.IdeaService.GetCount(p);
+            var ideas = await _manager.IdeaService.GetAllIdeasWithDetailsAsync(p, trackChanges: false);
+            var totalCount = await _manager.IdeaService.GetCountAsync(p);
 
             var pagination = new Pagination()
             {

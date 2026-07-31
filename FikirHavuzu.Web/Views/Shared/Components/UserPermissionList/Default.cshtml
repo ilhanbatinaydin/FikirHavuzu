@@ -1,0 +1,40 @@
+﻿@model IEnumerable<PermissionItemViewModel>
+
+<div class="permission-list-container my-0">
+    <div class="row mb-0">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var permission in Model)
+            {
+                <div class="col-md-4 my-3">
+                    <div class="form-check custom-checkbox-wrapper">
+                        <input class="form-check-input permission-checkbox shadow-sm"
+                               type="checkbox"
+                               name="SelectedPermissionIds"
+                               value="@permission.Id"
+                               id="perm_@permission.Id"
+                        @(permission.IsAssigned ? "checked" : "")
+                               data-dependencies="@permission.DependencyIdsAsJson">
+
+                        <label class="form-check-label fw-bold" for="perm_@permission.Id">
+                            @permission.Name
+                        </label>
+
+                        @if (!string.IsNullOrEmpty(permission.Description))
+                        {
+                            <div class="text-muted small ms-1" style="font-size: 0.8rem;">
+                                @permission.Description
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="alert alert-warning mb-0">
+                Sistemde atanabilir herhangi bir yetki bulunamadı.
+            </div>
+        }
+    </div>
+</div>

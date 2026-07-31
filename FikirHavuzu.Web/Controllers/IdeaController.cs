@@ -18,9 +18,10 @@ namespace FikirHavuzu.Controllers
         }
 
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            var categories = _manager.CategoryService.GetAllCategories(false);
+            // Kategori okuma işlemi I/O'dur, asenkron olmalı.
+            var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View();
         }
@@ -31,7 +32,7 @@ namespace FikirHavuzu.Controllers
         {
             if (!ModelState.IsValid)
             {
-                ViewBag.Categories = new SelectList(_manager.CategoryService.GetAllCategories(false), "Id", "Name");
+                ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
                 return View(ideaDto);
             }
 
@@ -59,7 +60,7 @@ namespace FikirHavuzu.Controllers
                         if (file.Length > maxFileSize)
                         {
                             ModelState.AddModelError("", $"'{file.FileName}' adlı dosya 5MB boyutunu aşıyor.");
-                            ViewBag.Categories = new SelectList(_manager.CategoryService.GetAllCategories(false), "Id", "Name");
+                            ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
                             return View(ideaDto);
                         }
 
@@ -68,7 +69,7 @@ namespace FikirHavuzu.Controllers
                         if (!allowedExtensions.Contains(extension))
                         {
                             ModelState.AddModelError("", $"'{file.FileName}' desteklenmeyen bir dosya formatı.");
-                            ViewBag.Categories = new SelectList(_manager.CategoryService.GetAllCategories(false), "Id", "Name");
+                            ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
                             return View(ideaDto);
                         }
 
@@ -95,8 +96,8 @@ namespace FikirHavuzu.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Fikriniz kaydedilirken bir sistem hatası oluştu. Lütfen daha sonra tekrar deneyiniz.");
-                ViewBag.Categories = new SelectList(_manager.CategoryService.GetAllCategories(false), "Id", "Name");
+                ModelState.AddModelError("", "Fikriniz kaydedilirken bir sistem hatası oluştu.");
+                ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
                 return View(ideaDto);
             }
         }

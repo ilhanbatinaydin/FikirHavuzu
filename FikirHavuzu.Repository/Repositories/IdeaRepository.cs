@@ -13,15 +13,11 @@ namespace FikirHavuzu.Repository.Repositories
         {
         }
 
-        // --- Temel CRUD İşlemleri ---
-        public void CreateOneIdea(Idea idea) => Create(idea);
-        public void DeleteOneIdea(Idea idea) => Remove(idea);
-        public void UpdateOneIdea(Idea idea) => Update(idea);
-        public IQueryable<Idea> GetAllIdeas(bool trackChanges) => FindAll(trackChanges);
-
-        public IQueryable<Idea> GetAllIdeasWithDetails(IdeaRequestParameters p, bool trackChanges)
+        public async Task<IEnumerable<Idea>> GetAllIdeasWithDetailsAsync(IdeaRequestParameters p, bool trackChanges)
         {
-            return FindAll(trackChanges)
+            var query = trackChanges ? _context.Ideas : _context.Ideas.AsNoTracking();
+
+            return await query
                 .Include(i => i.User)
                 .Include(i => i.Category)
                 .AsQueryable()
@@ -30,20 +26,13 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByFullName(p.FullName)
                 .FilteredByDate(p.FilterDate)
                 .OrderByDescending(i => i.Id)
-                .ToPaginate(p.PageNumber, p.PageSize);
+                .ToPaginate(p.PageNumber, p.PageSize)
+                .ToListAsync();
         }
 
-        public Idea? GetOneIdea(int id, bool trackChanges)
+        public async Task<int> GetCountAsync(IdeaRequestParameters p)
         {
-            return FindByCondition(i => i.Id.Equals(id), trackChanges)
-                .Include(i => i.User)
-                .Include(i => i.Category)
-                .SingleOrDefault();
-        }
-
-        public int GetCount(IdeaRequestParameters p)
-        {
-            return _context.Ideas
+            return await _context.Ideas.AsNoTracking()
                 .Include(i => i.User)
                 .Include(i => i.Category)
                 .AsQueryable()
@@ -51,7 +40,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)
                 .FilteredByDate(p.FilterDate)
-                .Count();
+                .CountAsync();
         }
     }
 }

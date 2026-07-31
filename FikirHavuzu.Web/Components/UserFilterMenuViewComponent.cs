@@ -12,9 +12,11 @@ namespace FikirHavuzu.Web.Components
             _manager = manager;
         }
 
-        public IViewComponentResult Invoke()
+        public async Task<IViewComponentResult> InvokeAsync()
         {
-            var permissions = _manager.PermissionService.GetAllPermissionsForFilter(false);
+            // 2. Servis metodunu asenkron (Async) versiyonuyla değiştirip await ile bekliyoruz
+            var permissions = await _manager.PermissionService.GetAllPermissionsForFilterAsync(false);
+
             return View(permissions);
         }
     }

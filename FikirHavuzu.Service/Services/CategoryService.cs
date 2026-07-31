@@ -2,6 +2,7 @@
 using AutoMapper;
 using FikirHavuzu.Entity.Dtos.Idea;
 using FikirHavuzu.Repository.Contracts;
+using FikirHavuzu.Repository.Repositories;
 using FikirHavuzu.Service.Contracts;
 
 namespace FikirHavuzu.Service.Services
@@ -18,10 +19,10 @@ namespace FikirHavuzu.Service.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<CategoryDto> GetAllCategories(bool trackChanges)
+        public async Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync(bool trackChanges)
         {
 
-            var categories=_manager.Category.FindAll(trackChanges);
+            var categories = await _manager.Category.GetAllCategoriesAsync(trackChanges);
 
             return _mapper.Map<IEnumerable<CategoryDto>>(categories);
         }

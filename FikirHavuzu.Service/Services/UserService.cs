@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
 using FikirHavuzu.Entity.Dtos.User;
+using FikirHavuzu.Entity.Entities;
 using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Repository.Contracts;
-using FikirHavuzu.Repository.Repositories;
 using FikirHavuzu.Service.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace FikirHavuzu.Service.Services
 {
@@ -19,16 +20,158 @@ namespace FikirHavuzu.Service.Services
             _mapper = mapper;
         }
 
-        public IEnumerable<UserDto> GetAllUsersWithDetails(UserRequestParameters p, bool trackChanges)
+        public async Task CreateUserAsync(UserCreateDto userDto)
         {
-            var users = _manager.User.GetAllUsersWithDetails(p, trackChanges);
+            var user = _mapper.Map<User>(userDto);
+
+            user.PasswordHash=BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+
+            var defaultPermission = await _manager.Permission
+                .FindByCondition(p => p.Name == "idea.view", trackChanges: false)
+                .FirstOrDefaultAsync();
+
+            if (defaultPermission != null)
+            {
+                user.UserPermissions = new List<UserPermission>
+                {
+                    new UserPermission {PermissionId=defaultPermission.Id}
+                };
+
+                _manager.User.Create(user);
+                await _manager.SaveAsync();
+            }
+        }
+
+        public async Task<IEnumerable<UserDto>> GetAllUsersWithDetailsAsync(UserRequestParameters p, bool trackChanges)
+        {
+            var users = await _manager.User.GetAllUsersWithDetailsAsync(p, trackChanges);
 
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
-        public int GetCount(UserRequestParameters p)
+        public async Task<int> GetCountAsync(UserRequestParameters p)
         {
-            return _manager.User.GetCount(p);
+            return await _manager.User.GetCountAsync(p);
         }
+
+        public async Task<UserUpdateDto> GetUserForUpdateAsync(int id, bool trackChanges)
+        {
+            var user = await _manager.User
+                .FindByCondition(u => u.Id == id, trackChanges)
+                .SingleOrDefaultAsync();
+
+            if (user == null)
+            {
+                throw new Exception("Güncellenmek istenen kullanıcı bulunamadı.");
+            }
+
+            return _mapper.Map<UserUpdateDto>(user);
+        }
+
+        public async Task UpdateUserAsync(UserUpdateDto userDto)
+        {
+            var user = await _manager.User
+                .FindByCondition(u => u.Id == userDto.Id, trackChanges: true)
+                .SingleOrDefaultAsync();
+
+            if (user == null)
+            {
+                throw new Exception("Güncellenmek istenen kullanıcı bulunamadı.");
+            }
+
+            var existingPasswordHash = user.PasswordHash;
+
+            _mapper.Map(userDto, user);
+
+            if (string.IsNullOrEmpty(userDto.Password))
+            {
+                user.PasswordHash = existingPasswordHash;
+            }
+            else
+            {
+                user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password);
+            }
+
+            await _manager.SaveAsync();
+        }
+
+        public async Task<IEnumerable<int>> GetUserPermissionIdsAsync(int userId)
+        {
+
+            var user = await _manager.User.GetUserWithPermissionDetailsAsync(userId, trackChanges: false);
+
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı.");
+
+            return user.UserPermissions.Select(up => up.PermissionId).ToList();
+        }
+
+        public async Task UpdateUserPermissionsAsync(int userId, List<int> selectedPermissionIds)
+        {
+            var user = await _manager.User.GetUserWithPermissionDetailsAsync(userId, trackChanges: true);
+
+            if (user == null)
+                throw new Exception("Kullanıcı bulunamadı.");
+
+            if (selectedPermissionIds != null && selectedPermissionIds.Any())
+            {
+                var allPermissions = await _manager.Permission.GetAllPermissionsWithDependenciesAsync(trackChanges: false);
+
+                foreach (var selectedId in selectedPermissionIds)
+                {
+                    var permission = allPermissions.FirstOrDefault(p => p.Id == selectedId);
+
+                    if (permission != null && permission.RequiredPermissions.Any())
+                    {
+                        foreach (var required in permission.RequiredPermissions)
+                        {
+                            if (!selectedPermissionIds.Contains(required.RequiredPermissionId))
+                            {
+                                throw new Exception($"Güvenlik İhlali: '{permission.Name}' yetkisi, ID'si {required.RequiredPermissionId} olan temel yetki olmadan atanamaz!");
+                            }
+                        }
+                    }
+                }
+            }
+
+            user.UserPermissions.Clear();
+
+            if (selectedPermissionIds != null && selectedPermissionIds.Any())
+            {
+                foreach (var permissionId in selectedPermissionIds)
+                {
+                    user.UserPermissions.Add(new UserPermission
+                    {
+                        UserId = userId,
+                        PermissionId = permissionId
+                    });
+                }
+            }
+
+            await _manager.SaveAsync();
+        }
+
+        public async Task<UserDto> GetOneUserByIdAsync(int id, bool trackChanges)
+        {
+            var user = await _manager.User.GetOneUserByIdAsync(id, trackChanges);
+
+            if (user == null)
+                throw new Exception($"ID'si {id} olan kullanıcı bulunamadı.");
+
+            var userDto = _mapper.Map<UserDto>(user);
+
+            return userDto;
+        }
+        public async Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id)
+        {
+            var userEntity = await _manager.User.GetUserWithPermissionDetailsAsync(id, trackChanges: false);
+
+            var model = _mapper.Map<UserPermissionAssignmentDto>(userEntity);
+
+            model.SelectedPermissionIds = userEntity.UserPermissions.Select(up => up.PermissionId).ToList();
+
+            return model;
+        }
+
     }
 }

@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using FikirHavuzu.Entity.Dtos.Idea;
 using FikirHavuzu.Entity.Dtos.User;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Service.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace FikirHavuzu.Service.Services
 {
@@ -18,11 +18,20 @@ namespace FikirHavuzu.Service.Services
             _mapper= mapper;
         }
 
-        public IEnumerable<PermissionDto> GetAllPermissionsForFilter(bool trackChanges)
+        public async Task<IEnumerable<PermissionDto>> GetAllPermissionsForFilterAsync(bool trackChanges)
         {
-            var permissions = _manager.Permission.FindAll(trackChanges);
+            var permissions = await _manager.Permission.FindAll(trackChanges).ToListAsync();
 
             return _mapper.Map<IEnumerable<PermissionDto>>(permissions);
+        }
+
+        public async Task<IEnumerable<PermissionWithDependenciesDto>> GetAllPermissionsWithDependenciesAsync(bool trackChanges)
+        {
+            var permissions = await _manager.Permission.GetAllPermissionsWithDependenciesAsync(trackChanges);
+
+            var permissionsDto = _mapper.Map<IEnumerable<PermissionWithDependenciesDto>>(permissions);
+
+            return permissionsDto;
         }
     }
 }

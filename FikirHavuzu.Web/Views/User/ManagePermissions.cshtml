@@ -1,0 +1,93 @@
+﻿@model UserPermissionAssignmentDto
+
+@{
+    ViewData["Title"] = "Kullanıcı Yetkilendirme";
+}
+
+<div class="container my-3">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 text-primary">Yetki Yönetimi: @Model.FullName</h4>
+
+                @if (Model.IsActive)
+                {
+                    <span class="badge bg-success">Aktif Kullanıcı</span>
+                }
+                else
+                {
+                    <span class="badge bg-danger">Pasif Kullanıcı</span>
+                }
+            </div>
+            <p class="text-muted mt-1 mb-0">@Model.Email | T.C.: @Model.IdentityNumber</p>
+        </div>
+        <div class="card-body">
+
+            <form asp-controller="User" asp-action="ManagePermissions" method="post">
+                <input type="hidden" asp-for="Id" />
+
+
+                @await Component.InvokeAsync("UserPermissionList", new { selectedIds = Model.SelectedPermissionIds })
+
+                <hr class="text-muted opacity-25 my-3"/>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a asp-controller="User" asp-action="Index" class="btn btn-outline-danger me-md-2">Vazgeç</a>
+                    <button type="submit" class="btn btn-outline-primary">Yetkileri Kaydet</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+
+            $('.permission-checkbox').on('change', function () {
+                let $this = $(this);
+                let isChecked = $this.is(':checked');
+                let currentId = parseInt($this.val());
+
+                let dependencies = $this.data('dependencies');
+
+                if (isChecked) {
+                    if (dependencies && dependencies.length > 0) {
+                        dependencies.forEach(function(requiredId) {
+                            let $parentCheckbox = $('#perm_' + requiredId);
+
+                            if (!$parentCheckbox.is(':checked')) {
+                                $parentCheckbox.prop('checked', true);
+
+                                $parentCheckbox.closest('.custom-checkbox-wrapper').fadeTo(100, 0.3).fadeTo(500, 1.0);
+
+                                $parentCheckbox.trigger('change');
+                            }
+                        });
+                    }
+                }
+                else {
+
+                    $('.permission-checkbox').each(function () {
+                        let $otherCheckbox = $(this);
+
+                        if ($otherCheckbox.val() != currentId && $otherCheckbox.is(':checked')) {
+
+                            let otherDependencies = $otherCheckbox.data('dependencies');
+
+                            if (otherDependencies && otherDependencies.includes(currentId)) {
+                                $otherCheckbox.prop('checked', false);
+
+                                $otherCheckbox.closest('.custom-checkbox-wrapper').fadeTo(100, 0.3).fadeTo(500, 1.0);
+
+                                $otherCheckbox.trigger('change');
+                            }
+                        }
+                    });
+                }
+            });
+
+        });
+    </script>
+}

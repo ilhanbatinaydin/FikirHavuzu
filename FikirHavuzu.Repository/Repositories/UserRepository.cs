@@ -13,11 +13,11 @@ namespace FikirHavuzu.Repository.Repositories
         {
         }
 
-        public IEnumerable<User> GetAllUsersWithDetails(UserRequestParameters p, bool trackChanges)
+        public async Task<IEnumerable<User>> GetAllUsersWithDetailsAsync(UserRequestParameters p, bool trackChanges)
         {
             var query = trackChanges ? _context.Users : _context.Users.AsNoTracking();
 
-            return query
+            return await query
                 .FilteredByFullName(p.FullName)
                 .FilteredByIdentityNumber(p.IdentityNumber)
                 .FilteredByActiveStatus(p.IsActive)
@@ -26,17 +26,17 @@ namespace FikirHavuzu.Repository.Repositories
                     .ThenInclude(up => up.Permission)
                 .OrderByDescending(u => u.Id)
                 .ToPaginate(p.PageNumber, p.PageSize)
-                .ToList();
+                .ToListAsync();
         }
 
-        public int GetCount(UserRequestParameters p)
+        public async Task<int> GetCountAsync(UserRequestParameters p)
         {
-            return _context.Users.AsNoTracking()
+            return await _context.Users.AsNoTracking()
                 .FilteredByFullName(p.FullName)
                 .FilteredByIdentityNumber(p.IdentityNumber)
                 .FilteredByActiveStatus(p.IsActive)
                 .FilteredByPermissionId(p.PermissionId)
-                .Count();
+                .CountAsync();
         }
 
         public async Task<User?> GetUserWithPermissionsByEmailAsync(string email)
@@ -46,5 +46,18 @@ namespace FikirHavuzu.Repository.Repositories
                     .ThenInclude(up => up.Permission)
                 .FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
         }
+
+        public async Task<User> GetUserWithPermissionDetailsAsync(int userId, bool trackChanges)
+        {
+            return await FindByCondition(u => u.Id == userId, trackChanges)
+                        .Include(u => u.UserPermissions)
+                        .SingleOrDefaultAsync();
+        }
+        public async Task<User> GetOneUserByIdAsync(int id, bool trackChanges)
+        {
+            return await FindByCondition(u => u.Id == id, trackChanges)
+                        .SingleOrDefaultAsync();
+        }
+
     }
 }

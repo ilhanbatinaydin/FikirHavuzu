@@ -4,6 +4,6 @@ namespace FikirHavuzu.Service.Contracts
 {
     public interface ICategoryService
     {
-        IEnumerable<CategoryDto> GetAllCategories(bool trackChanges);
+        Task<IEnumerable<CategoryDto>> GetAllCategoriesAsync(bool trackChanges);
     }
 }
