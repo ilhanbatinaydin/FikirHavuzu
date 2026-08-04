@@ -1,7 +1,10 @@
-﻿using FikirHavuzu.Entity.Dtos.User;
+﻿using AutoMapper;
+using FikirHavuzu.Entity.Dtos.User;
 using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Service.Exceptions;
 using FikirHavuzu.Web.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,9 +14,11 @@ namespace FikirHavuzu.Web.Controllers
     {
         private readonly IServiceManager _manager;
 
-        public UserController(IServiceManager manager)
+        private readonly IMapper _mapper;
+        public UserController(IServiceManager manager, IMapper mapper)
         {
             _manager = manager;
+            _mapper= mapper;
         }
 
         [HttpGet]
@@ -43,24 +48,46 @@ namespace FikirHavuzu.Web.Controllers
         [Authorize(Policy = "UserManagePolicy")]
         public IActionResult Create()
         {
-            var initialDto = new UserCreateDto { IsActive = true };
-            return View(initialDto);
+            var initialViewModel = new UserCreateViewModel { IsActive = true };
+            return View(initialViewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "UserManagePolicy")]
-        public async Task<IActionResult> Create(UserCreateDto model)
+        public async Task<IActionResult> Create(UserCreateViewModel model, [FromServices] IValidator<UserCreateViewModel> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
             {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
                 return View(model);
             }
 
-            await _manager.UserService.CreateUserAsync(model);
+            try
+            {
+                var userCreateDto = _mapper.Map<UserCreateDto>(model);
+                await _manager.UserService.CreateUserAsync(userCreateDto);
 
-            TempData["SuccessMessage"] = "Kullanıcı başarıyla eklendi ve varsayılan yetkisi tanımlandı.";
-            return RedirectToAction(nameof(Index));
+                TempData["SuccessMessage"] = "Kullanıcı başarıyla eklendi ve varsayılan yetkisi tanımlandı.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (NotFoundException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Kullanıcı kaydedilirken sunucu kaynaklı beklenmeyen bir hata oluştu. Lütfen sistem yöneticisiyle iletişime geçin.");
+
+                return View(model);
+            }
         }
 
         [HttpGet]
@@ -69,13 +96,19 @@ namespace FikirHavuzu.Web.Controllers
         {
             try
             {
-                var model = await _manager.UserService.GetUserForUpdateAsync(id, false);
+                var dto = await _manager.UserService.GetUserForUpdateAsync(id, false);
+                var viewModel = _mapper.Map<UserUpdateViewModel>(dto);
 
-                return View(model);
+                return View(viewModel);
             }
-            catch (Exception ex)
+            catch (NotFoundException ex)
             {
                 TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Kullanıcı bilgileri getirilirken beklenmeyen bir hata oluştu.";
                 return RedirectToAction("Index");
             }
         }
@@ -83,23 +116,35 @@ namespace FikirHavuzu.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "UserManagePolicy")]
-        public async Task<IActionResult> Update(UserUpdateDto model)
+        public async Task<IActionResult> Update(UserUpdateViewModel model, [FromServices] IValidator<UserUpdateViewModel> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
             {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
                 return View(model);
             }
 
             try
             {
-                await _manager.UserService.UpdateUserAsync(model);
+                var dto = _mapper.Map<UserUpdateDto>(model);
+                await _manager.UserService.UpdateUserAsync(dto);
 
                 TempData["SuccessMessage"] = $"{model.FirstName} {model.LastName} kullanıcısı başarıyla güncellendi.";
                 return RedirectToAction("Index");
             }
-            catch (Exception ex)
+            catch (NotFoundException ex)
             {
-                ModelState.AddModelError(string.Empty, $"Güncelleme sırasında bir hata oluştu: {ex.Message}");
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Güncelleme işlemi sırasında sunucu kaynaklı beklenmeyen bir hata oluştu.");
                 return View(model);
             }
         }
@@ -108,27 +153,55 @@ namespace FikirHavuzu.Web.Controllers
         [Authorize(Policy = "PermissionManagePolicy")]
         public async Task<IActionResult> ManagePermissions(int id)
         {
-            var model = await _manager.UserService.GetUserForPermissionAssignmentAsync(id);
-
-            if (model == null) return NotFound();
-
-            return View(model);
+            try
+            {
+                var dto = await _manager.UserService.GetUserForPermissionAssignmentAsync(id);
+                var viewModel = _mapper.Map<UserPermissionAssignmentViewModel>(dto);
+                return View(viewModel);
+            }
+            catch (NotFoundException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Kullanıcı yetkileri getirilirken sistem kaynaklı bir hata oluştu.";
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "PermissionManagePolicy")]
-        public async Task<IActionResult> ManagePermissions(UserPermissionAssignmentDto model)
+        public async Task<IActionResult> ManagePermissions(UserPermissionAssignmentViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
-            await _manager.UserService.UpdateUserPermissionsAsync(model.Id, model.SelectedPermissionIds);
-
-            TempData["SuccessMessage"] = "Kullanıcı yetkileri başarıyla güncellendi.";
-            return RedirectToAction("Index");
+            try
+            {
+                await _manager.UserService.UpdateUserPermissionsAsync(model.Id, model.SelectedPermissionIds);
+                TempData["SuccessMessage"] = "Kullanıcı yetkileri başarıyla güncellendi.";
+                return RedirectToAction("Index");
+            }
+            catch (NotFoundException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (BusinessRuleException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Yetkilendirme işlemi sırasında sunucu kaynaklı beklenmeyen bir hata oluştu.");
+                return View(model);
+            }
         }
     }
 }

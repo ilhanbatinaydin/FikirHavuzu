@@ -60,5 +60,17 @@ namespace FikirHavuzu.Service.Services
 
             await _manager.SaveAsync();
         }
+
+        public async Task<IdeaDetailDto?> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges)
+        {
+            var idea = await _manager.Idea.GetIdeaByIdWithDetailsAsync(ideaId, trackChanges);
+
+            if (idea is null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<IdeaDetailDto>(idea);
+        }
     }
 }

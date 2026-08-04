@@ -11,5 +11,7 @@
         IPermissionService PermissionService { get; }
 
         IUserService UserService { get; }
+
+        IEvaluationService EvaluationService { get; }
     }
 }

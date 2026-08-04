@@ -4,6 +4,7 @@ using FikirHavuzu.Entity.Entities;
 using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Service.Exceptions;
 using Microsoft.EntityFrameworkCore;
 
 namespace FikirHavuzu.Service.Services
@@ -30,16 +31,18 @@ namespace FikirHavuzu.Service.Services
                 .FindByCondition(p => p.Name == "idea.view", trackChanges: false)
                 .FirstOrDefaultAsync();
 
-            if (defaultPermission != null)
+            if (defaultPermission == null)
             {
-                user.UserPermissions = new List<UserPermission>
-                {
-                    new UserPermission {PermissionId=defaultPermission.Id}
-                };
-
-                _manager.User.Create(user);
-                await _manager.SaveAsync();
+                throw new NotFoundException("Sistemde varsayılan kullanıcı yetkisi (idea.view) bulunamadı. Lütfen sistem yöneticisine başvurun.");
             }
+
+            user.UserPermissions = new List<UserPermission>
+            {
+                new UserPermission { PermissionId = defaultPermission.Id }
+            };
+
+            _manager.User.Create(user);
+            await _manager.SaveAsync();
         }
 
         public async Task<IEnumerable<UserDto>> GetAllUsersWithDetailsAsync(UserRequestParameters p, bool trackChanges)
@@ -62,7 +65,7 @@ namespace FikirHavuzu.Service.Services
 
             if (user == null)
             {
-                throw new Exception("Güncellenmek istenen kullanıcı bulunamadı.");
+                throw new NotFoundException("Güncellenmek istenen kullanıcı bulunamadı.");
             }
 
             return _mapper.Map<UserUpdateDto>(user);
@@ -76,7 +79,7 @@ namespace FikirHavuzu.Service.Services
 
             if (user == null)
             {
-                throw new Exception("Güncellenmek istenen kullanıcı bulunamadı.");
+                throw new NotFoundException("Güncellenmek istenen kullanıcı bulunamadı.");
             }
 
             var existingPasswordHash = user.PasswordHash;
@@ -101,7 +104,7 @@ namespace FikirHavuzu.Service.Services
             var user = await _manager.User.GetUserWithPermissionDetailsAsync(userId, trackChanges: false);
 
             if (user == null)
-                throw new Exception("Kullanıcı bulunamadı.");
+                throw new NotFoundException("Kullanıcı bulunamadı.");
 
             return user.UserPermissions.Select(up => up.PermissionId).ToList();
         }
@@ -111,7 +114,7 @@ namespace FikirHavuzu.Service.Services
             var user = await _manager.User.GetUserWithPermissionDetailsAsync(userId, trackChanges: true);
 
             if (user == null)
-                throw new Exception("Kullanıcı bulunamadı.");
+                throw new NotFoundException("Kullanıcı bulunamadı.");
 
             if (selectedPermissionIds != null && selectedPermissionIds.Any())
             {
@@ -127,7 +130,7 @@ namespace FikirHavuzu.Service.Services
                         {
                             if (!selectedPermissionIds.Contains(required.RequiredPermissionId))
                             {
-                                throw new Exception($"Güvenlik İhlali: '{permission.Name}' yetkisi, ID'si {required.RequiredPermissionId} olan temel yetki olmadan atanamaz!");
+                                throw new BusinessRuleException($"Güvenlik İhlali: '{permission.Name}' yetkisi, ID'si {required.RequiredPermissionId} olan temel yetki olmadan atanamaz!");
                             }
                         }
                     }
@@ -156,21 +159,58 @@ namespace FikirHavuzu.Service.Services
             var user = await _manager.User.GetOneUserByIdAsync(id, trackChanges);
 
             if (user == null)
-                throw new Exception($"ID'si {id} olan kullanıcı bulunamadı.");
+                throw new NotFoundException($"ID'si {id} olan kullanıcı bulunamadı.");
 
             var userDto = _mapper.Map<UserDto>(user);
 
             return userDto;
         }
+
         public async Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id)
         {
             var userEntity = await _manager.User.GetUserWithPermissionDetailsAsync(id, trackChanges: false);
 
-            var model = _mapper.Map<UserPermissionAssignmentDto>(userEntity);
+            if (userEntity == null)
+            {
+                throw new NotFoundException("Yetkileri düzenlenecek kullanıcı bulunamadı.");
+            }
 
+            var model = _mapper.Map<UserPermissionAssignmentDto>(userEntity);
             model.SelectedPermissionIds = userEntity.UserPermissions.Select(up => up.PermissionId).ToList();
 
             return model;
+        }
+
+        public async Task<bool> IsIdentityExistsAsync(string identityNumber, int? excludeUserId = null)
+        {
+            return await _manager.User.FindByCondition(u =>
+                u.IdentityNumber == identityNumber &&
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
+                .AnyAsync();
+        }
+
+        public async Task<bool> IsRegistrationNumberExistsAsync(string registrationNumber, int? excludeUserId = null)
+        {
+            return await _manager.User.FindByCondition(u =>
+                u.RegistrationNumber == registrationNumber &&
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
+                .AnyAsync();
+        }
+
+        public async Task<bool> IsEmailExistsAsync(string email, int? excludeUserId = null)
+        {
+            return await _manager.User.FindByCondition(u =>
+                u.Email == email &&
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
+                .AnyAsync();
+        }
+
+        public async Task<bool> IsPhoneNumberExistsAsync(string phoneNumber, int? excludeUserId = null)
+        {
+            return await _manager.User.FindByCondition(u =>
+                u.PhoneNumber == phoneNumber &&
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
+                .AnyAsync();
         }
 
     }

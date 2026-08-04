@@ -1,16 +1,18 @@
-﻿@model IdeaCreateDto
+﻿@model IdeaCreateViewModel
 
 @{
     ViewData["Title"] = "Yeni Fikir Ekle";
 }
 
 <div class="container mt-3">
-    <div class="card shadow-sm">
-        <div class="card-header bg-white text-white">
-            <h4 class="mb-0 text-primary">Yeni Fikir Ekle</h4>
+    <div class="card shadow-sm border-0 border-start border-4 border-primary">
+        <div class="card-header bg-white border-bottom-0 pt-3">
+            <h4 class="mb-0 text-primary fw-bold">Yeni Fikir Ekle</h4>
         </div>
         <div class="card-body">
             <form asp-controller="Idea" asp-action="Create" method="post" enctype="multipart/form-data">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger fw-bold" role="alert"></div>
 
                 <div class="mb-3">
                     <label asp-for="Title" class="form-label fw-bold"></label>
@@ -20,7 +22,7 @@
 
                 <div class="mb-3">
                     <label asp-for="CategoryId" class="form-label fw-bold"></label>
-                    <select asp-for="CategoryId" class="form-select" asp-items="@ViewBag.Categories">
+                    <select asp-for="CategoryId" class="form-select" asp-items="@Model.CategoryList">
                         <option value="">-- Lütfen Bir Kategori Seçiniz --</option>
                     </select>
                     <span asp-validation-for="CategoryId" class="text-danger"></span>
@@ -39,16 +41,19 @@
                 </div>
 
                 <div class="mb-4">
-                    <label class="form-label fw-bold">Destekleyici Belgeler (İsteğe Bağlı)</label>
-                    <input type="file" name="documents" class="form-control" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
-                    <div class="form-text text-muted">
+                    <label class="form-label fw-bold"><i class="fa-solid fa-paperclip text-secondary me-2"></i>Destekleyici Belgeler (İsteğe Bağlı)</label>
+                    <input type="file" asp-for="Documents" id="documentInput" class="form-control" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
+                    <span asp-validation-for="Documents" class="text-danger small d-block mt-1"></span>
+                    <div class="form-text text-muted mb-2">
                         Maksimum 5MB büyüklüğünde PDF, Word veya Görsel dosyaları yükleyebilirsiniz. Birden fazla dosya seçebilirsiniz.
                     </div>
+
+                    <div id="fileList" class="d-flex flex-column gap-2 mt-3"></div>
                 </div>
 
-                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-danger me-md-2">İptal</a>
-                    <button type="submit" class="btn btn-outline-success">Fikri Gönder</button>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-outline-danger fw-bold me-md-2 px-4">İptal</a>
+                    <button type="submit" class="btn btn-primary fw-bold px-4 shadow-sm">Fikri Gönder</button>
                 </div>
             </form>
         </div>
@@ -56,5 +61,7 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial"/>
+    <partial name="_ValidationScriptsPartial" />
+
+    <script src="~/js/custom-file-upload.js" asp-append-version="true"></script>
 }

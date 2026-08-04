@@ -24,7 +24,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByCategoryId(p.CategoryId)
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)
-                .FilteredByDate(p.FilterDate)
+                .FilteredByDateRange(p.StartDate, p.EndDate)
                 .OrderByDescending(i => i.Id)
                 .ToPaginate(p.PageNumber, p.PageSize)
                 .ToListAsync();
@@ -39,8 +39,17 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByCategoryId(p.CategoryId)
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)
-                .FilteredByDate(p.FilterDate)
+                .FilteredByDateRange(p.StartDate, p.EndDate)
                 .CountAsync();
+        }
+
+        public async Task<Idea> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges)
+        {
+            return await FindByCondition(i => i.Id == ideaId, trackChanges)
+                        .Include(i => i.User)
+                        .Include(i => i.Category)
+                        .Include(i=>i.Documents)
+                        .SingleOrDefaultAsync();
         }
     }
 }

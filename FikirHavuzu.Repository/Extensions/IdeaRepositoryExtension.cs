@@ -39,13 +39,15 @@ namespace FikirHavuzu.Repository.Extensions
         }
 
         // 4. Tarihe Göre Filtreleme
-        public static IQueryable<Idea> FilteredByDate(this IQueryable<Idea> ideas, DateTime? filterDate)
+        public static IQueryable<Idea> FilteredByDateRange(this IQueryable<Idea> ideas, DateTime? startDate, DateTime? endDate)
         {
-            if (filterDate is null)
-                return ideas;
+            if (startDate.HasValue)
+                ideas=ideas.Where(i=>i.CreatedAt.Date>=startDate.Value.Date);
 
-            // .Date özelliğini kullanarak saat/dakika kısımlarını yoksayarız, sadece günü eşitleriz.
-            return ideas.Where(i => i.CreatedAt.Date == filterDate.Value.Date);
+            if (endDate.HasValue)
+                ideas=ideas.Where(i=>i.CreatedAt.Date<=endDate.Value.Date);
+
+            return ideas;
         }
 
         // 5. Sayfalama (Pagination)

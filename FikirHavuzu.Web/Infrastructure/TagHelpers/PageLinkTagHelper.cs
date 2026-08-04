@@ -99,6 +99,12 @@ namespace FikirHavuzu.Web.Infrastructure.TagHelpers
             TagBuilder tag = new TagBuilder("a");
 
             var routeValues = new RouteValueDictionary();
+
+            foreach (var key in ViewContext.RouteData.Values.Keys)
+            {
+                routeValues[key] = ViewContext.RouteData.Values[key];
+            }
+
             foreach (var key in ViewContext.HttpContext.Request.Query.Keys)
             {
                 routeValues[key] = ViewContext.HttpContext.Request.Query[key].ToString();

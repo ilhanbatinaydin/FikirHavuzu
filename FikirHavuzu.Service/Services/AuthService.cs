@@ -2,6 +2,7 @@
 using FikirHavuzu.Entity.Dtos.Auth;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Service.Exceptions;
 
 namespace FikirHavuzu.Service.Services
 {
@@ -23,19 +24,19 @@ namespace FikirHavuzu.Service.Services
 
             if (user == null)
             {
-                throw new Exception("E-posta adresi veya şifre hatalı.");
+                throw new AuthenticationException("E-posta adresi veya şifre hatalı.");
             }
 
             if (!user.IsActive)
             {
-                throw new Exception("Hesabınız pasif duruma alınmıştır.");
+                throw new AuthenticationException("Hesabınız pasif duruma alınmıştır. Lütfen sistem yöneticisi ile iletişime geçin.");
             }
 
             bool isPasswordValid = BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash);
 
             if (!isPasswordValid)
             {
-                throw new Exception("E-posta adresi veya şifre hatalı.");
+                throw new AuthenticationException("E-posta adresi veya şifre hatalı.");
             }
 
             var responseDto = _mapper.Map<UserLoginResponseDto>(user);

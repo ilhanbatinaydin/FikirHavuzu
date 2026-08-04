@@ -39,6 +39,7 @@ namespace FikirHavuzu.Web.Infrastructure.Extensions
             services.AddScoped<IIdeaService, IdeaService>();
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IEvaluationService, EvaluationService>();
         }
 
         public static void ConfigureCustomAuthentication(this IServiceCollection services)

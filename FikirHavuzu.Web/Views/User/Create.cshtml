@@ -1,4 +1,4 @@
-﻿@model UserCreateDto
+﻿@model UserCreateViewModel
 
 @{
     ViewData["Title"] = "Yeni Kullanıcı Ekle";
@@ -11,6 +11,8 @@
         </div>
         <div class="card-body">
             <form asp-controller="User" asp-action="Create" method="post">
+
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger fw-bold" role="alert"></div>
 
                 <div class="row">
                     <div class="col-md-6 my-3">

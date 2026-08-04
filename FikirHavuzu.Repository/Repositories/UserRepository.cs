@@ -24,7 +24,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByPermissionId(p.PermissionId)
                 .Include(u => u.UserPermissions)
                     .ThenInclude(up => up.Permission)
-                .OrderByDescending(u => u.Id)
+                .OrderBy(u => u.Id)
                 .ToPaginate(p.PageNumber, p.PageSize)
                 .ToListAsync();
         }

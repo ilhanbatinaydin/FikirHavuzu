@@ -14,5 +14,9 @@ namespace FikirHavuzu.Service.Contracts
         Task UpdateUserPermissionsAsync(int userId, List<int> selectedPermissionIds);
         Task<UserDto> GetOneUserByIdAsync(int id, bool trackChanges);
         Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id);
+        Task<bool> IsIdentityExistsAsync(string identityNumber, int? excludeUserId = null);
+        Task<bool> IsRegistrationNumberExistsAsync(string registrationNumber, int? excludeUserId = null);
+        Task<bool> IsEmailExistsAsync(string email, int? excludeUserId = null);
+        Task<bool> IsPhoneNumberExistsAsync(string phoneNumber, int? excludeUserId = null);
     }
 }

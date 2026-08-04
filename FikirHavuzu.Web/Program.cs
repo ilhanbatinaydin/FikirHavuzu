@@ -1,5 +1,5 @@
 using FikirHavuzu.Web.Infrastructure.Extensions;
-using Microsoft.AspNetCore.Authentication.Cookies;
+using FluentValidation;
 
 namespace FikirHavuzu.Web
 {
@@ -10,6 +10,7 @@ namespace FikirHavuzu.Web
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllersWithViews();
+            builder.Services.AddValidatorsFromAssemblyContaining<Program>();
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.ConfigureDbContext(builder.Configuration);

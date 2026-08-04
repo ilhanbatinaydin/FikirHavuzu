@@ -1,0 +1,76 @@
+﻿@model UserDto
+@{
+    bool hasManagePerm = ViewData["HasManagePerm"] as bool? ?? false;
+}
+
+<div class="col-12">
+    <div class="card shadow-sm border-0 border-start border-4 @(Model.IsActive ? "border-success" : "border-danger")">
+        <div class="card-body">
+            <div class="row align-items-center">
+
+                <div class="col-md-4 text-center text-md-start mb-3 mb-md-0">
+                    <div class="d-flex align-items-center justify-content-center justify-content-md-start">
+                        <div class="bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center me-3 border" style="width: 50px; height: 50px;">
+                            <i class="fa-solid fa-user fs-4"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">@Model.FirstName @Model.LastName</h6>
+                            @if (Model.IsActive)
+                            {
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success rounded-pill">Aktif</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger bg-opacity-10 text-danger border border-danger rounded-pill">Pasif</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-5 mb-3 mb-md-0">
+                    <div class="row text-muted small mb-2">
+                        <div class="col-6 mb-1">
+                            <i class="fa-solid fa-id-card me-1"></i> <strong>T.C.:</strong> @Model.IdentityNumber
+                        </div>
+                        <div class="col-6 mb-1">
+                            <i class="fa-solid fa-envelope me-1"></i> @Model.Email
+                        </div>
+                        <div class="col-6">
+                            <i class="fa-solid fa-hashtag me-1"></i> <strong>Sicil:</strong> @Model.RegistrationNumber
+                        </div>
+                        <div class="col-6">
+                            <i class="fa-solid fa-phone me-1"></i> @Model.PhoneNumber
+                        </div>
+                    </div>
+
+                    <div class="small">
+                        <strong class="text-secondary"><i class="fa-solid fa-shield-halved text-warning me-1"></i> Yetkiler:</strong>
+                        @if (Model.Permissions != null && Model.Permissions.Any())
+                        {
+                            <span class="text-muted">@string.Join(", ", Model.Permissions)</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Yetki atanmamış</span>
+                        }
+                    </div>  
+                </div>
+
+                <div class="col-md-3 text-center text-md-end">
+                    <div class="d-grid gap-2">
+                        <a asp-controller="User" asp-action="Update" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-pen-to-square"></i> Güncelle
+                        </a>
+                        @if (hasManagePerm)
+                        {
+                            <a asp-controller="User" asp-action="ManagePermissions" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-warning">
+                                <i class="fa-solid fa-key"></i> Yetkilendir
+                            </a>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

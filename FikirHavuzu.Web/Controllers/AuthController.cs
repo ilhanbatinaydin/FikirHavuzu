@@ -1,6 +1,8 @@
 ﻿using FikirHavuzu.Entity.Dtos.Auth;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Service.Exceptions;
 using FikirHavuzu.Web.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -24,10 +26,16 @@ namespace FikirHavuzu.Web.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login([FromForm] LoginViewModel model)
+        public async Task<IActionResult> Login([FromForm] LoginViewModel model, [FromServices] IValidator<LoginViewModel> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
             {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
                 return View(model);
             }
 
@@ -36,7 +44,7 @@ namespace FikirHavuzu.Web.Controllers
                 var loginDto = new UserLoginDto
                 {
                     Email = model.Email,
-                    Password=model.Password
+                    Password = model.Password
                 };
 
                 var userResponse = await _manager.AuthService.LoginAsync(loginDto);
@@ -69,12 +77,18 @@ namespace FikirHavuzu.Web.Controllers
 
                 return RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
+            catch (AuthenticationException ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty, "Sisteme giriş yapılırken beklenmeyen bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.");
+                return View(model);
+            }
         }
+
         public async Task<IActionResult> Logout([FromQuery(Name = "ReturnUrl")] string returnUrl = "/")
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

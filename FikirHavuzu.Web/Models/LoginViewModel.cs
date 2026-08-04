@@ -6,13 +6,9 @@ namespace FikirHavuzu.Web.Models
     {
         private string? _returnUrl;
 
-        [Required(ErrorMessage = "Lütfen e-posta adresinizi girin.")]
-        [EmailAddress(ErrorMessage = "Geçerli bir e-posta adresi giriniz.")]
         [Display(Name = "E-posta Adresi")]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Lütfen şifrenizi girin.")]
-        [DataType(DataType.Password)]
         [Display(Name = "Şifre")]
         public string Password { get; set; } = string.Empty;
 

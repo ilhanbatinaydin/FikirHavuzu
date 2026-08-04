@@ -2,19 +2,16 @@
 {
     public class IdeaRequestParameters : RequestParameters
     {
-        // Fikir başlığı veya açıklamasında arama
         public string? SearchQuery { get; set; }
 
-        // Ekleyen kişinin Adı-Soyadı içinde arama
         public string? FullName { get; set; }
 
-        // Dropdown'dan seçilen spesifik Kategori ID'si
         public int? CategoryId { get; set; }
 
-        // Belirli bir tarihte oluşturulan fikirler
-        public DateTime? FilterDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
-        // Varsayılan olarak ekranda 6 kart gösterilecek
+        public DateTime? EndDate { get; set; }
+
         private int _pageSize = 9;
 
         public int PageSize

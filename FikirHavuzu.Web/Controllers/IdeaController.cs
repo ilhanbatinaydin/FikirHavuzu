@@ -1,5 +1,8 @@
-﻿using FikirHavuzu.Entity.Dtos.Idea;
+﻿using AutoMapper;
+using FikirHavuzu.Entity.Dtos.Idea;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Web.Models;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -7,72 +10,66 @@ using System.Security.Claims;
 
 namespace FikirHavuzu.Controllers
 {
-    [Authorize(Policy = "IdeaCreatePolicy")]
     public class IdeaController : Controller
     {
         private readonly IServiceManager _manager;
 
-        public IdeaController(IServiceManager manager)
+        private readonly IMapper _mapper;
+
+        public IdeaController(IServiceManager manager, IMapper mapper)
         {
             _manager = manager;
+            _mapper = mapper;
         }
 
         [HttpGet]
+        [Authorize(Policy = "IdeaCreatePolicy")]
         public async Task<IActionResult> Create()
         {
-            // Kategori okuma işlemi I/O'dur, asenkron olmalı.
             var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
-            ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View();
+            var viewModel = new IdeaCreateViewModel
+            {
+                CategoryList = new SelectList(categories, "Id", "Name")
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([FromForm] IdeaCreateDto ideaDto, List<IFormFile> documents)
+        [Authorize(Policy = "IdeaCreatePolicy")]
+        public async Task<IActionResult> Create([FromForm] IdeaCreateViewModel model, [FromServices] IValidator<IdeaCreateViewModel> validator)
         {
-            if (!ModelState.IsValid)
+            var validationResult = await validator.ValidateAsync(model);
+
+            if (!validationResult.IsValid)
             {
-                ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
-                return View(ideaDto);
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+                var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
+                model.CategoryList = new SelectList(categories, "Id", "Name");
+                return View(model);
             }
 
             try
             {
                 var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
                 if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
                 {
                     return RedirectToAction("Login", "Auth");
                 }
 
-                if (documents != null && documents.Count > 0)
+                var ideaDto = _mapper.Map<IdeaCreateDto>(model);
+
+                if (model.Documents != null && model.Documents.Count > 0)
                 {
-                    var allowedExtensions = new[] { ".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg" };
-                    long maxFileSize = 5 * 1024 * 1024;
-
                     var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "ideas");
+                    if (!Directory.Exists(uploadPath)) Directory.CreateDirectory(uploadPath);
 
-                    if (!Directory.Exists(uploadPath))
-                        Directory.CreateDirectory(uploadPath);
-
-                    foreach (var file in documents)
+                    foreach (var file in model.Documents)
                     {
-                        if (file.Length > maxFileSize)
-                        {
-                            ModelState.AddModelError("", $"'{file.FileName}' adlı dosya 5MB boyutunu aşıyor.");
-                            ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
-                            return View(ideaDto);
-                        }
-
                         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-
-                        if (!allowedExtensions.Contains(extension))
-                        {
-                            ModelState.AddModelError("", $"'{file.FileName}' desteklenmeyen bir dosya formatı.");
-                            ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
-                            return View(ideaDto);
-                        }
-
                         var safeFileName = $"{Guid.NewGuid()}{extension}";
                         var filePath = Path.Combine(uploadPath, safeFileName);
 
@@ -90,16 +87,36 @@ namespace FikirHavuzu.Controllers
                 }
 
                 await _manager.IdeaService.CreateIdeaAsync(ideaDto, userId, false);
-
                 TempData["SuccessMessage"] = "Fikriniz başarıyla sisteme eklenmiştir!";
                 return RedirectToAction("Index", "Home");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 ModelState.AddModelError("", "Fikriniz kaydedilirken bir sistem hatası oluştu.");
-                ViewBag.Categories = new SelectList(await _manager.CategoryService.GetAllCategoriesAsync(false), "Id", "Name");
-                return View(ideaDto);
+                var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
+                model.CategoryList = new SelectList(categories, "Id", "Name");
+                return View(model);
             }
         }
+
+        [HttpGet]
+        [Authorize(Policy = "IdeaViewPolicy")]
+        public async Task<IActionResult> Detail(int id)
+        {
+            var idea = await _manager.IdeaService.GetIdeaByIdWithDetailsAsync(id, trackChanges: false);
+
+            if (idea == null)
+            {
+                return NotFound();
+            }
+
+            var model = new IdeaDetailViewModel
+            {
+                Idea = idea
+            };
+
+            return View(model);
+        }
+
     }
 }

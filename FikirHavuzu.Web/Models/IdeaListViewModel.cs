@@ -1,5 +1,4 @@
 ﻿using FikirHavuzu.Entity.Dtos.Idea;
-using FikirHavuzu.Entity.RequestParameters;
 
 namespace FikirHavuzu.Web.Models
 {

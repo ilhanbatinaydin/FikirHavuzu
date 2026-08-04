@@ -15,5 +15,7 @@ namespace FikirHavuzu.Service.Contracts
         Task<int> GetCountAsync(IdeaRequestParameters p);
 
         Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId, bool trackChanges);
+
+        Task<IdeaDetailDto?> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges);
     }
 }
