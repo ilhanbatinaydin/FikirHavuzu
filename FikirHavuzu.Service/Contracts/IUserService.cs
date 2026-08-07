@@ -13,7 +13,7 @@ namespace FikirHavuzu.Service.Contracts
         Task<IEnumerable<int>> GetUserPermissionIdsAsync(int userId);
         Task UpdateUserPermissionsAsync(int userId, List<int> selectedPermissionIds);
         Task<UserDto> GetOneUserByIdAsync(int id, bool trackChanges);
-        Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id);
+        Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id, bool trackChanges);
         Task<bool> IsIdentityExistsAsync(string identityNumber, int? excludeUserId = null);
         Task<bool> IsRegistrationNumberExistsAsync(string registrationNumber, int? excludeUserId = null);
         Task<bool> IsEmailExistsAsync(string email, int? excludeUserId = null);

@@ -134,7 +134,7 @@ namespace FikirHavuzu.Web.Controllers
                 var dto = _mapper.Map<UserUpdateDto>(model);
                 await _manager.UserService.UpdateUserAsync(dto);
 
-                TempData["SuccessMessage"] = $"{model.FirstName} {model.LastName} kullanıcısı başarıyla güncellendi.";
+                TempData["SuccessMessage"] = "Kullanıcı başarıyla güncellendi.";
                 return RedirectToAction("Index");
             }
             catch (NotFoundException ex)
@@ -155,7 +155,7 @@ namespace FikirHavuzu.Web.Controllers
         {
             try
             {
-                var dto = await _manager.UserService.GetUserForPermissionAssignmentAsync(id);
+                var dto = await _manager.UserService.GetUserForPermissionAssignmentAsync(id, false);
                 var viewModel = _mapper.Map<UserPermissionAssignmentViewModel>(dto);
                 return View(viewModel);
             }

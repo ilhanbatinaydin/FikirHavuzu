@@ -1,14 +1,18 @@
 ﻿using FikirHavuzu.Entity.Entities;
 using FikirHavuzu.Entity.RequestParameters;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+using System.Linq.Expressions;
 
 namespace FikirHavuzu.Repository.Contracts
 {
     public interface IUserRepository : IRepositoryBase<User>
     {
-        Task<User?> GetUserWithPermissionsByEmailAsync(string email);
+        Task<User?> GetUserWithPermissionsByEmailAsync(string email, bool trackChanges);
         Task<IEnumerable<User>> GetAllUsersWithDetailsAsync(UserRequestParameters p, bool trackChanges);
         Task<int> GetCountAsync(UserRequestParameters p);
         Task<User> GetUserWithPermissionDetailsAsync(int userId, bool trackChanges);
         Task<User> GetOneUserByIdAsync(int id, bool trackChanges);
+        Task<User> GetUserByConditionAsync(Expression<Func<User, bool>> expression, bool trackChanges);
+        Task<bool> CheckIfUserExistsAsync(Expression<Func<User, bool>> expression);
     }
 }

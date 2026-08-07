@@ -3,8 +3,11 @@ using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Repository.Repositories;
 using FikirHavuzu.Service.Contracts;
 using FikirHavuzu.Service.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using System.Security.Claims;
 
 namespace FikirHavuzu.Web.Infrastructure.Extensions
 {
@@ -44,6 +47,8 @@ namespace FikirHavuzu.Web.Infrastructure.Extensions
 
         public static void ConfigureCustomAuthentication(this IServiceCollection services)
         {
+            services.AddMemoryCache();
+
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
@@ -53,6 +58,64 @@ namespace FikirHavuzu.Web.Infrastructure.Extensions
                     options.AccessDeniedPath = new PathString("/Auth/AccessDenied");
                     options.ExpireTimeSpan = TimeSpan.FromHours(2);
                     options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+
+                    options.Events = new CookieAuthenticationEvents
+                    {
+                        OnValidatePrincipal = async context =>
+                        {
+                            var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier);
+
+                            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out int userId))
+                            {
+                                var cache = context.HttpContext.RequestServices.GetRequiredService<IMemoryCache>();
+                                var cacheKey = $"UserNeedsRefresh_{userId}";
+
+                                if (cache.TryGetValue(cacheKey, out _))
+                                {
+                                    var serviceManager = context.HttpContext.RequestServices.GetRequiredService<IServiceManager>();
+
+                                    var updatedUser = await serviceManager.UserService.GetOneUserByIdAsync(userId, false);
+
+                                    if (updatedUser == null || !updatedUser.IsActive)
+                                    {
+                                        context.RejectPrincipal();
+                                        await context.HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                                        cache.Remove(cacheKey);
+                                        return;
+                                    }
+
+                                    var claims = new List<Claim>
+                                    {
+                                        new Claim(ClaimTypes.NameIdentifier, updatedUser.Id.ToString()),
+                                        new Claim(ClaimTypes.Name, updatedUser.FirstName),
+                                        new Claim(ClaimTypes.Surname, updatedUser.LastName),
+                                        new Claim(ClaimTypes.Email, updatedUser.Email)
+                                    };
+
+                                    var userPermissionIds = await serviceManager.UserService.GetUserPermissionIdsAsync(userId);
+
+                                    var allPermissions = await serviceManager.PermissionService.GetAllPermissionsWithDependenciesAsync(trackChanges: false);
+
+                                    foreach (var permId in userPermissionIds)
+                                    {
+                                        var permission = allPermissions.FirstOrDefault(p => p.Id == permId);
+                                        if (permission != null)
+                                        {
+                                            claims.Add(new Claim("Permission", permission.Name));
+                                        }
+                                    }
+
+                                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                                    context.ReplacePrincipal(new ClaimsPrincipal(identity));
+
+                                    context.ShouldRenew = true;
+
+                                    cache.Remove(cacheKey);
+                                }
+                            }
+                        }
+                    };
                 });
         }
 

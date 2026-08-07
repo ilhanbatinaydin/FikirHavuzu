@@ -89,12 +89,21 @@ namespace FikirHavuzu.Web.Controllers
             }
         }
 
-        public async Task<IActionResult> Logout([FromQuery(Name = "ReturnUrl")] string returnUrl = "/")
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout([FromForm(Name = "ReturnUrl")] string returnUrl = "/")
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return Redirect(returnUrl);
+
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
+        [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();

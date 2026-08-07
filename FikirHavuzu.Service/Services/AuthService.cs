@@ -20,7 +20,7 @@ namespace FikirHavuzu.Service.Services
 
         public async Task<UserLoginResponseDto> LoginAsync(UserLoginDto dto)
         {
-            var user=await _manager.User.GetUserWithPermissionsByEmailAsync(dto.Email);
+            var user=await _manager.User.GetUserWithPermissionsByEmailAsync(dto.Email, false);
 
             if (user == null)
             {

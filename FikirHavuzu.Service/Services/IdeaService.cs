@@ -5,6 +5,8 @@ using FikirHavuzu.Entity.Entities;
 using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Service.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace FikirHavuzu.Service.Services
 {
@@ -32,8 +34,14 @@ namespace FikirHavuzu.Service.Services
             return await _manager.Idea.GetCountAsync(p);
         }
 
-        public async Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId, bool trackChanges)
+        public async Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId)
         {
+            var categoryExists = await _manager.Category.FindByCondition(c => c.Id == ideaDto.CategoryId, false).AnyAsync();
+            if (!categoryExists)
+            {
+                throw new NotFoundException("Seçilen kategori sistemde bulunamadı. Lütfen geçerli bir kategori seçiniz.");
+            }
+
             var ideaEntity = _mapper.Map<Idea>(ideaDto);
 
             ideaEntity.UserId = userId;
@@ -61,13 +69,13 @@ namespace FikirHavuzu.Service.Services
             await _manager.SaveAsync();
         }
 
-        public async Task<IdeaDetailDto?> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges)
+        public async Task<IdeaDetailDto> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges)
         {
             var idea = await _manager.Idea.GetIdeaByIdWithDetailsAsync(ideaId, trackChanges);
 
             if (idea is null)
             {
-                return null;
+                throw new NotFoundException("Görüntülemek istediğiniz fikir sistemde bulunamadı veya silinmiş olabilir.");
             }
 
             return _mapper.Map<IdeaDetailDto>(idea);

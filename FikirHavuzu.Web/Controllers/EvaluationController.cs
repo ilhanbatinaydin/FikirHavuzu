@@ -41,7 +41,7 @@ namespace FikirHavuzu.Web.Controllers
                 int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
                 var evaluationDto = _mapper.Map<EvaluationCreateDto>(newEvaluation);
 
-                await _manager.EvaluationService.CreateEvaluationAsync(evaluationDto, userId, false);
+                await _manager.EvaluationService.CreateEvaluationAsync(evaluationDto, userId);
 
                 TempData["SuccessMessage"] = "Değerlendirmeniz başarıyla sisteme eklenmiştir!";
                 return RedirectToAction("Detail", "Idea", new { id = newEvaluation.IdeaId });

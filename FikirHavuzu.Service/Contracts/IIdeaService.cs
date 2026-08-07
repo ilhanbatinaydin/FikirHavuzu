@@ -1,10 +1,5 @@
 ﻿using FikirHavuzu.Entity.Dtos.Idea;
 using FikirHavuzu.Entity.RequestParameters;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace FikirHavuzu.Service.Contracts
 {
@@ -14,8 +9,8 @@ namespace FikirHavuzu.Service.Contracts
 
         Task<int> GetCountAsync(IdeaRequestParameters p);
 
-        Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId, bool trackChanges);
+        Task CreateIdeaAsync(IdeaCreateDto ideaDto, int userId);
 
-        Task<IdeaDetailDto?> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges);
+        Task<IdeaDetailDto> GetIdeaByIdWithDetailsAsync(int ideaId, bool trackChanges);
     }
 }

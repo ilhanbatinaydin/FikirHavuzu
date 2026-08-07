@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using FikirHavuzu.Entity.Dtos.Idea;
 using FikirHavuzu.Service.Contracts;
+using FikirHavuzu.Service.Exceptions;
 using FikirHavuzu.Web.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
@@ -54,11 +55,7 @@ namespace FikirHavuzu.Controllers
 
             try
             {
-                var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out int userId))
-                {
-                    return RedirectToAction("Login", "Auth");
-                }
+                int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
                 var ideaDto = _mapper.Map<IdeaCreateDto>(model);
 
@@ -86,9 +83,17 @@ namespace FikirHavuzu.Controllers
                     }
                 }
 
-                await _manager.IdeaService.CreateIdeaAsync(ideaDto, userId, false);
+                await _manager.IdeaService.CreateIdeaAsync(ideaDto, userId);
                 TempData["SuccessMessage"] = "Fikriniz başarıyla sisteme eklenmiştir!";
                 return RedirectToAction("Index", "Home");
+            }
+            catch (NotFoundException ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
+                model.CategoryList = new SelectList(categories, "Id", "Name");
+
+                return View(model);
             }
             catch (Exception)
             {
@@ -103,19 +108,27 @@ namespace FikirHavuzu.Controllers
         [Authorize(Policy = "IdeaViewPolicy")]
         public async Task<IActionResult> Detail(int id)
         {
-            var idea = await _manager.IdeaService.GetIdeaByIdWithDetailsAsync(id, trackChanges: false);
-
-            if (idea == null)
+            try
             {
-                return NotFound();
+                var idea = await _manager.IdeaService.GetIdeaByIdWithDetailsAsync(id, trackChanges: false);
+
+                var model = new IdeaDetailViewModel
+                {
+                    Idea = idea
+                };
+
+                return View(model);
             }
-
-            var model = new IdeaDetailViewModel
+            catch (NotFoundException ex)
             {
-                Idea = idea
-            };
-
-            return View(model);
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Fikir detayları yüklenirken sunucu kaynaklı bir hata oluştu.";
+                return RedirectToAction("Index", "Home");
+            }
         }
 
     }

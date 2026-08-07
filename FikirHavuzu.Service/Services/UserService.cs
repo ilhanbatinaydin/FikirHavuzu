@@ -5,7 +5,7 @@ using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Service.Contracts;
 using FikirHavuzu.Service.Exceptions;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace FikirHavuzu.Service.Services
 {
@@ -15,10 +15,13 @@ namespace FikirHavuzu.Service.Services
 
         private readonly IMapper _mapper;
 
-        public UserService(IRepositoryManager manager, IMapper mapper)
+        private readonly IMemoryCache _cache;
+
+        public UserService(IRepositoryManager manager, IMapper mapper, IMemoryCache cache)
         {
             _manager = manager;
             _mapper = mapper;
+            _cache = cache;
         }
 
         public async Task CreateUserAsync(UserCreateDto userDto)
@@ -27,9 +30,7 @@ namespace FikirHavuzu.Service.Services
 
             user.PasswordHash=BCrypt.Net.BCrypt.HashPassword(userDto.Password);
 
-            var defaultPermission = await _manager.Permission
-                .FindByCondition(p => p.Name == "idea.view", trackChanges: false)
-                .FirstOrDefaultAsync();
+            var defaultPermission = await _manager.Permission.GetPermissionByNameAsync("Idea.View", false);
 
             if (defaultPermission == null)
             {
@@ -59,9 +60,7 @@ namespace FikirHavuzu.Service.Services
 
         public async Task<UserUpdateDto> GetUserForUpdateAsync(int id, bool trackChanges)
         {
-            var user = await _manager.User
-                .FindByCondition(u => u.Id == id, trackChanges)
-                .SingleOrDefaultAsync();
+            var user = await _manager.User.GetUserByConditionAsync(u => u.Id == id, trackChanges);
 
             if (user == null)
             {
@@ -73,9 +72,7 @@ namespace FikirHavuzu.Service.Services
 
         public async Task UpdateUserAsync(UserUpdateDto userDto)
         {
-            var user = await _manager.User
-                .FindByCondition(u => u.Id == userDto.Id, trackChanges: true)
-                .SingleOrDefaultAsync();
+            var user = await _manager.User.GetUserByConditionAsync(u => u.Id == userDto.Id, trackChanges: true);
 
             if (user == null)
             {
@@ -96,6 +93,8 @@ namespace FikirHavuzu.Service.Services
             }
 
             await _manager.SaveAsync();
+
+            _cache.Set($"UserNeedsRefresh_{userDto.Id}", true, TimeSpan.FromHours(2));
         }
 
         public async Task<IEnumerable<int>> GetUserPermissionIdsAsync(int userId)
@@ -152,6 +151,8 @@ namespace FikirHavuzu.Service.Services
             }
 
             await _manager.SaveAsync();
+
+            _cache.Set($"UserNeedsRefresh_{userId}", true, TimeSpan.FromHours(2));
         }
 
         public async Task<UserDto> GetOneUserByIdAsync(int id, bool trackChanges)
@@ -166,9 +167,9 @@ namespace FikirHavuzu.Service.Services
             return userDto;
         }
 
-        public async Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id)
+        public async Task<UserPermissionAssignmentDto> GetUserForPermissionAssignmentAsync(int id, bool trackChanges)
         {
-            var userEntity = await _manager.User.GetUserWithPermissionDetailsAsync(id, trackChanges: false);
+            var userEntity = await _manager.User.GetUserWithPermissionDetailsAsync(id, trackChanges);
 
             if (userEntity == null)
             {
@@ -183,34 +184,30 @@ namespace FikirHavuzu.Service.Services
 
         public async Task<bool> IsIdentityExistsAsync(string identityNumber, int? excludeUserId = null)
         {
-            return await _manager.User.FindByCondition(u =>
+            return await _manager.User.CheckIfUserExistsAsync(u =>
                 u.IdentityNumber == identityNumber &&
-                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
-                .AnyAsync();
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value));
         }
 
         public async Task<bool> IsRegistrationNumberExistsAsync(string registrationNumber, int? excludeUserId = null)
         {
-            return await _manager.User.FindByCondition(u =>
+            return await _manager.User.CheckIfUserExistsAsync(u =>
                 u.RegistrationNumber == registrationNumber &&
-                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
-                .AnyAsync();
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value));
         }
 
         public async Task<bool> IsEmailExistsAsync(string email, int? excludeUserId = null)
         {
-            return await _manager.User.FindByCondition(u =>
+            return await _manager.User.CheckIfUserExistsAsync(u =>
                 u.Email == email &&
-                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
-                .AnyAsync();
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value));
         }
 
         public async Task<bool> IsPhoneNumberExistsAsync(string phoneNumber, int? excludeUserId = null)
         {
-            return await _manager.User.FindByCondition(u =>
+            return await _manager.User.CheckIfUserExistsAsync(u =>
                 u.PhoneNumber == phoneNumber &&
-                (!excludeUserId.HasValue || u.Id != excludeUserId.Value), trackChanges: false)
-                .AnyAsync();
+                (!excludeUserId.HasValue || u.Id != excludeUserId.Value));
         }
 
     }

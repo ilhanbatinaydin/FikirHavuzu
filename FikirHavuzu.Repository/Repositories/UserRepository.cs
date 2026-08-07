@@ -4,6 +4,7 @@ using FikirHavuzu.Repository.Context;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Repository.Extensions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace FikirHavuzu.Repository.Repositories
 {
@@ -15,9 +16,7 @@ namespace FikirHavuzu.Repository.Repositories
 
         public async Task<IEnumerable<User>> GetAllUsersWithDetailsAsync(UserRequestParameters p, bool trackChanges)
         {
-            var query = trackChanges ? _context.Users : _context.Users.AsNoTracking();
-
-            return await query
+            return await FindAll(trackChanges)
                 .FilteredByFullName(p.FullName)
                 .FilteredByIdentityNumber(p.IdentityNumber)
                 .FilteredByActiveStatus(p.IsActive)
@@ -31,20 +30,20 @@ namespace FikirHavuzu.Repository.Repositories
 
         public async Task<int> GetCountAsync(UserRequestParameters p)
         {
-            return await _context.Users.AsNoTracking()
+            return await FindAll(false)
                 .FilteredByFullName(p.FullName)
                 .FilteredByIdentityNumber(p.IdentityNumber)
                 .FilteredByActiveStatus(p.IsActive)
                 .FilteredByPermissionId(p.PermissionId)
-                .CountAsync();
+                .CountAsync();  
         }
 
-        public async Task<User?> GetUserWithPermissionsByEmailAsync(string email)
+        public async Task<User?> GetUserWithPermissionsByEmailAsync(string email, bool trackChanges)
         {
-            return await _context.Users
+            return await FindByCondition(u => u.Email == email && u.IsActive, trackChanges)
                 .Include(u => u.UserPermissions)
                     .ThenInclude(up => up.Permission)
-                .FirstOrDefaultAsync(u => u.Email == email && u.IsActive);
+                .FirstOrDefaultAsync();
         }
 
         public async Task<User> GetUserWithPermissionDetailsAsync(int userId, bool trackChanges)
@@ -57,6 +56,16 @@ namespace FikirHavuzu.Repository.Repositories
         {
             return await FindByCondition(u => u.Id == id, trackChanges)
                         .SingleOrDefaultAsync();
+        }
+
+        public async Task<User> GetUserByConditionAsync(Expression<Func<User, bool>> expression, bool trackChanges)
+        {
+            return await FindByCondition(expression, trackChanges).SingleOrDefaultAsync();
+        }
+
+        public async Task<bool> CheckIfUserExistsAsync(Expression<Func<User, bool>> expression)
+        {
+            return await FindByCondition(expression, trackChanges: false).AnyAsync();
         }
 
     }

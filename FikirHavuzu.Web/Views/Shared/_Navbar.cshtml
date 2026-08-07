@@ -9,6 +9,7 @@
         <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between" id="navbarNavAltMarkup">
 
             <ul class="navbar-nav flex-grow-1">
+
                 <li class="nav-item">
                     <a class="nav-link" aria-current="page" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                 </li>
@@ -24,11 +25,30 @@
             <ul class="navbar-nav">
                 @if (User.Identity.IsAuthenticated)
                 {
-                    <li class="nav-item">
-                        <a class="nav-link" aria-current="page" asp-controller="Auth" asp-action="Logout">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            Çıkış Yap
+                    var firstName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+                    var lastName = User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value;
+                    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-circle-user fa-xl me-2 text-primary"></i>
+                            <span class="fw-medium">@firstName @lastName</span>
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm mt-2" aria-labelledby="userProfileDropdown">
+                            <li class="px-3 py-2 text-center border-bottom mb-1">
+                                <span class="d-block fw-bold text-dark">@firstName @lastName</span>
+                                <small class="text-muted">@email</small>
+                            </li>
+
+                            <li>
+                                <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0 p-0">
+                                    <button type="submit" class="dropdown-item text-danger d-flex align-items-center py-2">
+                                        <i class="fa-solid fa-right-from-bracket me-2"></i>
+                                        Çıkış Yap
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
                     </li>
                 }
                 else

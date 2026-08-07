@@ -26,7 +26,6 @@ namespace FikirHavuzu.Repository.Repositories
         public IIdeaRepository Idea => _ideaRepository;
         public IUserRepository User => _userRepository;
         public IEvaluationRepository Evaluation => _evaluationRepository;
-
         public IPermissionRepository Permission => _permissionRepository;
 
         public void Save()

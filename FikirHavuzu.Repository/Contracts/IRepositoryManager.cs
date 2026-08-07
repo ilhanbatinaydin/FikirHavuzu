@@ -8,7 +8,6 @@
         IEvaluationRepository Evaluation { get; }
         IPermissionRepository Permission { get; }
         void Save();
-
         Task SaveAsync();
     }
 }

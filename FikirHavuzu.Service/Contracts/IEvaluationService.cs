@@ -9,6 +9,6 @@ namespace FikirHavuzu.Service.Contracts
 
         Task<int> GetCountAsync(EvaluationRequestParameters p);
 
-        Task CreateEvaluationAsync(EvaluationCreateDto evaluationDto, int userId, bool trackChanges);
+        Task CreateEvaluationAsync(EvaluationCreateDto evaluationDto, int userId);
     }
 }

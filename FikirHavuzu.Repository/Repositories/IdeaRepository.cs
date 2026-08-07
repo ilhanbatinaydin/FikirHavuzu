@@ -15,12 +15,9 @@ namespace FikirHavuzu.Repository.Repositories
 
         public async Task<IEnumerable<Idea>> GetAllIdeasWithDetailsAsync(IdeaRequestParameters p, bool trackChanges)
         {
-            var query = trackChanges ? _context.Ideas : _context.Ideas.AsNoTracking();
-
-            return await query
+            return await FindAll(trackChanges)
                 .Include(i => i.User)
                 .Include(i => i.Category)
-                .AsQueryable()
                 .FilteredByCategoryId(p.CategoryId)
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)
@@ -32,10 +29,7 @@ namespace FikirHavuzu.Repository.Repositories
 
         public async Task<int> GetCountAsync(IdeaRequestParameters p)
         {
-            return await _context.Ideas.AsNoTracking()
-                .Include(i => i.User)
-                .Include(i => i.Category)
-                .AsQueryable()
+            return await FindAll(false)
                 .FilteredByCategoryId(p.CategoryId)
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)

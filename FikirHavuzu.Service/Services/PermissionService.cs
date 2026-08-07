@@ -2,7 +2,6 @@
 using FikirHavuzu.Entity.Dtos.User;
 using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Service.Contracts;
-using Microsoft.EntityFrameworkCore;
 
 namespace FikirHavuzu.Service.Services
 {
@@ -20,7 +19,7 @@ namespace FikirHavuzu.Service.Services
 
         public async Task<IEnumerable<PermissionDto>> GetAllPermissionsForFilterAsync(bool trackChanges)
         {
-            var permissions = await _manager.Permission.FindAll(trackChanges).ToListAsync();
+            var permissions = await _manager.Permission.GetAllPermissionsAsync(trackChanges);
 
             return _mapper.Map<IEnumerable<PermissionDto>>(permissions);
         }

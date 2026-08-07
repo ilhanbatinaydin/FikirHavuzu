@@ -32,7 +32,7 @@ namespace FikirHavuzu.Service.Services
             return await _manager.Evaluation.GetCountAsync(p);
         }
 
-        public async Task CreateEvaluationAsync(EvaluationCreateDto evaluationDto, int userId, bool trackChanges)
+        public async Task CreateEvaluationAsync(EvaluationCreateDto evaluationDto, int userId)
         {
             var ideaExists = await _manager.Idea.FindByCondition(i => i.Id == evaluationDto.IdeaId, false).AnyAsync();
 

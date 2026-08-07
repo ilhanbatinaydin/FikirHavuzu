@@ -14,9 +14,9 @@ namespace FikirHavuzu.Repository.Repositories
 
         public async Task<IEnumerable<Category>> GetAllCategoriesAsync(bool trackChanges)
         {
-            var query = trackChanges ? _context.Categories : _context.Categories.AsNoTracking();
-
-            return await query.OrderBy(c => c.Name).ToListAsync();
+            return await FindAll(trackChanges)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
         }
     }
 }

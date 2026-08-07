@@ -1,5 +1,4 @@
 ﻿using FikirHavuzu.Entity.Dtos.User;
-using FikirHavuzu.Entity.Entities;
 
 namespace FikirHavuzu.Service.Contracts
 {

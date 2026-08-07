@@ -1,3 +1,4 @@
+using FikirHavuzu.Repository.Context;
 using FikirHavuzu.Web.Infrastructure.Extensions;
 using FluentValidation;
 
@@ -22,7 +23,10 @@ namespace FikirHavuzu.Web
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            app.ConfigureLocalization();
+
+            app.ConfigureAndCheckMigration<AppDbContext>();
+
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
