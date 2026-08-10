@@ -1,6 +1,5 @@
 ﻿using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Service.Contracts;
-using FikirHavuzu.Service.Services;
 using FikirHavuzu.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 

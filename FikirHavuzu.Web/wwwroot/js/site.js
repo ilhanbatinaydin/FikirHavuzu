@@ -1,4 +1,8 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function clearFilterForm(element) {
+    const form = element.closest('form');
+    if (!form) return;
 
-// Write your JavaScript code.
+    form.reset();
+    form.querySelectorAll('input').forEach(input => input.value = '');
+    form.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+}

@@ -4,8 +4,7 @@
         Filtreler
     </h5>
 
-    <form method="get">
-        <input type="hidden" name="IdeaId" value="@Model.IdeaId" />
+    <form method="get" asp-controller="Idea" asp-action="Detail" asp-route-id="@Model.IdeaId">
 
         <div class="mb-3">
             <label class="form-label text-muted small fw-bold">Değerlendiren</label>
@@ -42,8 +41,24 @@
         </div>
 
         <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-outline-primary btn-sm fw-bold">Uygula</button>
-            <a href="/Idea/Detail/@Model.IdeaId" class="btn btn-outline-danger btn-sm">Sıfırla</a>
+            <button type="button"
+                    hx-get="@Url.Action("Detail", "Idea", new { id = Model.IdeaId })"
+                    hx-include="closest form"
+                    hx-target="#evaluation-list-container"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    class="btn btn-outline-primary btn-sm fw-bold">
+                    Uygula
+            </button>
+
+            <a hx-get="@Url.Action("Detail", "Idea", new { id = Model.IdeaId })"
+               hx-target="#evaluation-list-container"
+               hx-swap="innerHTML"
+               hx-push-url="true"
+               onclick="clearFilterForm(this)"
+               class="btn btn-outline-danger btn-sm">
+               Sıfırla
+            </a>
         </div>
     </form>
 </div>

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FikirHavuzu.Entity.Dtos.Idea;
+using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Service.Contracts;
 using FikirHavuzu.Service.Exceptions;
 using FikirHavuzu.Web.Models;

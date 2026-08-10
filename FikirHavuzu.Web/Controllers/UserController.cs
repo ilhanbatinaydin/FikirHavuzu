@@ -41,6 +41,11 @@ namespace FikirHavuzu.Web.Controllers
                 Pagination = pagination
             };
 
+            if (Request.Headers.ContainsKey("HX-Request"))
+            {
+                return PartialView("_UserListPartial", viewModel);
+            }
+
             return View(viewModel);
         }
 

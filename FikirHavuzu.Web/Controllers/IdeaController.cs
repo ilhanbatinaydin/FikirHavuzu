@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FikirHavuzu.Entity.Dtos.Idea;
+using FikirHavuzu.Entity.RequestParameters;
 using FikirHavuzu.Service.Contracts;
 using FikirHavuzu.Service.Exceptions;
 using FikirHavuzu.Web.Models;
@@ -106,8 +107,15 @@ namespace FikirHavuzu.Controllers
 
         [HttpGet]
         [Authorize(Policy = "IdeaViewPolicy")]
-        public async Task<IActionResult> Detail(int id)
+        public async Task<IActionResult> Detail(int id, EvaluationRequestParameters evalParams)
         {
+            if (Request.Headers.ContainsKey("HX-Request"))
+            {
+                evalParams.IdeaId = id;
+                return ViewComponent("EvaluationList", new { parameters = evalParams });
+            }
+
+
             try
             {
                 var idea = await _manager.IdeaService.GetIdeaByIdWithDetailsAsync(id, trackChanges: false);
@@ -130,6 +138,5 @@ namespace FikirHavuzu.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-
     }
 }

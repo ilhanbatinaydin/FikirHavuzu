@@ -35,8 +35,23 @@
         </div>
 
         <div class="d-grid gap-2">
-            <button type="submit" class="btn btn-outline-primary btn-sm fw-bold">Uygula</button>
-            <a href="/Home/Index" class="btn btn-outline-danger btn-sm">Sıfırla</a>
+            <button type="button"
+                    hx-get="@Url.Action("Index", "Home")"
+                    hx-include="closest form"
+                    hx-target="#idea-list-container"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    class="btn btn-outline-primary btn-sm fw-bold">
+                    Uygula
+            </button>
+            <a hx-get="@Url.Action("Index", "Home")"
+               hx-target="#idea-list-container"
+               hx-swap="innerHTML"
+               hx-push-url="true"
+               onclick="clearFilterForm(this)"
+               class="btn btn-outline-danger btn-sm">
+               Sıfırla
+           </a>
         </div>
     </form>
 </div>

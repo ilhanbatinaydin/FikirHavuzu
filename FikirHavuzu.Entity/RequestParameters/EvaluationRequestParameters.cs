@@ -10,7 +10,7 @@
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        private int _pageSize = 10;
+        private int _pageSize = 1;
         public int PageSize
         {
             get { return _pageSize; }

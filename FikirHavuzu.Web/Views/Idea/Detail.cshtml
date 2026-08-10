@@ -142,7 +142,9 @@
             };
         }
 
-        @await Component.InvokeAsync("EvaluationList", new { parameters = requestParams })
+        <div id="evaluation-list-container">
+            @await Component.InvokeAsync("EvaluationList", new { parameters = requestParams })
+        </div>
     </div>
 </div>
 

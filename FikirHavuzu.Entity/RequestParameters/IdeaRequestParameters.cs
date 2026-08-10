@@ -12,7 +12,7 @@
 
         public DateTime? EndDate { get; set; }
 
-        private int _pageSize = 9;
+        private int _pageSize = 5;
 
         public int PageSize
         {
