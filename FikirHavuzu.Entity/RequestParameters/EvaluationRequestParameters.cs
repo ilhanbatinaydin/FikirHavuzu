@@ -2,7 +2,12 @@
 {
     public class EvaluationRequestParameters : RequestParameters
     {
-        public int IdeaId { get; set; }
+        public int? IdeaId { get; set; }
+        public int? UserId { get; set; }
+
+        public int? CategoryId { get; set; }
+        public string? SearchQuery { get; set; }
+
         public int? Score { get; set; }
         public bool? IsApproved { get; set; }
         public string? Comment { get; set; }

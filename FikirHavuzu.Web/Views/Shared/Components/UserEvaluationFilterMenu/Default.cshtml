@@ -1,0 +1,73 @@
+﻿@model UserEvaluationFilterViewModel
+
+<div class="p-3 bg-white rounded-3 shadow-sm border">
+    <h5 class="fw-bold text-primary border-bottom pb-3">
+        <i class="fa-solid fa-filter"></i>
+        Filtreler
+    </h5>
+
+    <form method="get" asp-controller="User" asp-action="Evaluations" asp-route-id="@Model.UserId">
+
+        <div class="mb-3">
+            <label asp-for="SearchQuery" class="form-label text-muted small fw-bold">Fikir Başlığı</label>
+            <input type="text" asp-for="SearchQuery" class="form-control form-control-sm" placeholder="Fikirlerde ara ..." />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="CategoryId" class="form-label text-muted small fw-bold">Kategori</label>
+            <select asp-for="CategoryId" class="form-select form-select-sm" asp-items="Model.CategoryList">
+                <option value="">Tümü</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Comment" class="form-label text-muted small fw-bold">Yorum İçeriği</label>
+            <input type="text" asp-for="Comment" class="form-control form-control-sm" placeholder="Yorumlarda ara ..." />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Score" class="form-label text-muted small fw-bold">Puan</label>
+            <input type="number" asp-for="Score" class="form-control form-control-sm" placeholder="Örn: 5" min="1" max="5" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="IsApproved" class="form-label text-muted small fw-bold">Durum</label>
+            <select asp-for="IsApproved" class="form-select form-select-sm">
+                <option value="">Tümü</option>
+                <option value="true">Onaylı</option>
+                <option value="false">Ret</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="StartDate" class="form-label text-muted small fw-bold">Başlangıç Tarihi</label>
+            <input type="date" asp-for="StartDate" class="form-control form-control-sm" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="EndDate" class="form-label text-muted small fw-bold">Bitiş Tarihi</label>
+            <input type="date" asp-for="EndDate" class="form-control form-control-sm" />
+        </div>
+
+        <div class="d-grid gap-2">
+            <button type="button"
+                    hx-get="@Url.Action("Evaluations", "User", new { id = Model.UserId })"
+                    hx-include="closest form"
+                    hx-target="#evaluation-list-container"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    class="btn btn-outline-primary btn-sm fw-bold">
+                Uygula
+            </button>
+
+            <a hx-get="@Url.Action("Evaluations", "User", new { id = Model.UserId })"
+               hx-target="#evaluation-list-container"
+               hx-swap="innerHTML"
+               hx-push-url="true"
+               onclick="clearFilterForm(this)"
+               class="btn btn-outline-danger btn-sm">
+                Sıfırla
+            </a>
+        </div>
+    </form>
+</div>

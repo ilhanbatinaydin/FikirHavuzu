@@ -244,5 +244,59 @@ namespace FikirHavuzu.Web.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+
+        [HttpGet]
+        [Authorize]
+        [Route("user/{id}/evaluations")]
+        public async Task<IActionResult> Evaluations(int id, EvaluationRequestParameters p)
+        {
+            try
+            {
+                var userDto = await _manager.UserService.GetOneUserByIdAsync(id, false);
+
+                var authResult = await _authorizationService.AuthorizeAsync(User, userDto, "ProfileAccessPolicy");
+                if (!authResult.Succeeded)
+                {
+                    TempData["ErrorMessage"] = "Başka bir kullanıcının değerlendirmelerini görüntüleme yetkiniz bulunmamaktadır.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                p.UserId = id;
+
+                var evaluations = await _manager.EvaluationService.GetAllEvaluationsWithDetailsAsync(p, trackChanges: false);
+                var totalCount = await _manager.EvaluationService.GetCountAsync(p);
+
+                var pagination = new Pagination()
+                {
+                    CurrentPage = p.PageNumber,
+                    ItemsPerPage = p.PageSize,
+                    TotalItems = totalCount
+                };
+
+                var viewModel = new UserEvaluationListViewModel()
+                {
+                    User = userDto,
+                    Evaluations = evaluations,
+                    Pagination = pagination
+                };
+
+                if (Request.Headers.ContainsKey("HX-Request"))
+                {
+                    return PartialView("_UserEvaluationListPartial", viewModel);
+                }
+
+                return View(viewModel);
+            }
+            catch (NotFoundException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Değerlendirmeler yüklenirken sistemsel bir hata oluştu.";
+                return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }

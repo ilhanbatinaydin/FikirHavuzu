@@ -9,6 +9,5 @@
         public string Email { get; set; } = string.Empty;
         public bool IsActive { get; set; }
         public List<int> SelectedPermissionIds { get; set; } = new List<int>();
-        public string FullName => $"{FirstName} {LastName}";
     }
 }

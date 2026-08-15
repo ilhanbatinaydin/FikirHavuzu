@@ -1,0 +1,34 @@
+﻿@model UserEvaluationListViewModel
+
+@{
+    ViewData["Title"] = $"{Model.User.FirstName} {Model.User.LastName} - Değerlendirmeleri";
+}
+
+<div class="row mt-4 mb-3">
+    <div class="col-12">
+        <div class="p-3 bg-white rounded-3 shadow-sm border d-flex justify-content-between align-items-center">
+            <div>
+                <h4 class="fw-bold text-secondary mb-1">
+                    <i class="fa-solid fa-comments text-success me-2"></i>
+                    @Model.User.FirstName @Model.User.LastName - Değerlendirmeleri
+                </h4>
+                <small class="text-muted">Kullanıcının diğer fikirlere yaptığı tüm puanlamalar ve değerlendirme geçmişi.</small>
+            </div>
+            <a asp-controller="User" asp-action="Profile" asp-route-id="@Model.User.Id" class="btn btn-outline-secondary btn-sm fw-bold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Profile Dön
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3 mb-3">
+        @await Component.InvokeAsync("UserEvaluationFilterMenu", new { userId = Model.User.Id })
+    </div>
+
+    <div class="col-md-9">
+        <div id="evaluation-list-container">
+            <partial name="_UserEvaluationListPartial" model="Model" />
+        </div>
+    </div>
+</div>

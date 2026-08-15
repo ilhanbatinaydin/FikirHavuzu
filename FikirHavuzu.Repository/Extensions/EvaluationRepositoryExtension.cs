@@ -4,9 +4,36 @@ namespace FikirHavuzu.Repository.Extensions
 {
     public static class EvaluationRepositoryExtension
     {
-        public static IQueryable<Evaluation> FilteredByIdeaId(this IQueryable<Evaluation> evaluations, int ideaId)
+        public static IQueryable<Evaluation> FilteredByIdeaId(this IQueryable<Evaluation> evaluations, int? ideaId)
         {
+            if (ideaId is null || ideaId <= 0)
+                return evaluations;
+
             return evaluations.Where(e => e.IdeaId == ideaId);
+        }
+
+        public static IQueryable<Evaluation> FilteredByUserId(this IQueryable<Evaluation> evaluations, int? userId)
+        {
+            if (userId is null || userId <= 0)
+                return evaluations;
+
+            return evaluations.Where(e => e.EvaluatedByUserId == userId);
+        }
+        public static IQueryable<Evaluation> FilteredByCategoryId(this IQueryable<Evaluation> evaluations, int? categoryId)
+        {
+            if (categoryId is null || categoryId <= 0)
+                return evaluations;
+
+            return evaluations.Where(e => e.Idea.CategoryId == categoryId);
+        }
+
+        public static IQueryable<Evaluation> FilteredBySearchQuery(this IQueryable<Evaluation> evaluations, string? searchQuery)
+        {
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return evaluations;
+
+            var term = searchQuery.Trim().ToLower();
+            return evaluations.Where(e => e.Idea.Title.ToLower().Contains(term));
         }
 
         public static IQueryable<Evaluation> FilteredByScore(this IQueryable<Evaluation> evaluations, int? score)
@@ -17,12 +44,12 @@ namespace FikirHavuzu.Repository.Extensions
             return evaluations.Where(e => e.Score == score);
         }
 
-        public static IQueryable<Evaluation> FilteredByIsApproved(this IQueryable<Evaluation> evaluations, bool? isApproved)
+        public static IQueryable<Evaluation> FilteredByApprovalStatus(this IQueryable<Evaluation> evaluations, bool? isApproved)
         {
             if (isApproved is null)
                 return evaluations;
 
-            return evaluations.Where(e => e.IsApproved == isApproved);
+            return evaluations.Where(e => e.IsApproved == isApproved.Value);
         }
 
         public static IQueryable<Evaluation> FilteredByComment(this IQueryable<Evaluation> evaluations, string? comment)

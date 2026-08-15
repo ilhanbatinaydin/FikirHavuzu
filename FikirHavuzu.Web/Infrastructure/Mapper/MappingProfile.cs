@@ -62,6 +62,8 @@ namespace FikirHavuzu.Web.Infrastructure.Mapper
             CreateMap<UserPermissionAssignmentDto, UserPermissionAssignmentViewModel>();
 
             CreateMap<Evaluation, EvaluationDto>()
+                .ForMember(dest => dest.IdeaTitle, opt => opt.MapFrom(src => src.Idea.Title))
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Idea.Category.Name))
                 .ForMember(dest => dest.EvaluatorFirstName, opt => opt.MapFrom(src => src.EvaluatedByUser.FirstName))
                 .ForMember(dest => dest.EvaluatorLastName, opt => opt.MapFrom(src => src.EvaluatedByUser.LastName))
                 .ForMember(dest => dest.EvaluatorEmail, opt => opt.MapFrom(src => src.EvaluatedByUser.Email));
