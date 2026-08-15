@@ -22,10 +22,11 @@ namespace FikirHavuzu.Web.Components
 
             var viewModel = new UserFilterViewModel
             {
-                FullName = requestQuery["fullName"],
-                IdentityNumber = requestQuery["identityNumber"],
-                PermissionId = int.TryParse(requestQuery["permissionId"], out int permId) ? permId : null,
-                IsActive = bool.TryParse(requestQuery["isActive"], out bool isActive) ? isActive : null
+                FullName = requestQuery["FullName"],
+                Email= requestQuery["Email"],
+                IdentityNumber = requestQuery["IdentityNumber"],
+                PermissionId = int.TryParse(requestQuery["PermissionId"], out int permId) ? permId : null,
+                IsActive = bool.TryParse(requestQuery["IsActive"], out bool isActive) ? isActive : null
             };
 
             viewModel.PermissionList = new SelectList(permissions, "Id", "Name", viewModel.PermissionId);

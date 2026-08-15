@@ -9,6 +9,8 @@ namespace FikirHavuzu.Entity.Dtos.Idea
         public string TargetedBenefit { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-        public string AddedByUserFullName { get; set; } = string.Empty;
+        public string AddedByUserFirstName { get; set; } = string.Empty;
+        public string AddedByUserLastName { get; set; } = string.Empty;
+        public string AddedByUserEmail { get; set; } = string.Empty;
     }
 }

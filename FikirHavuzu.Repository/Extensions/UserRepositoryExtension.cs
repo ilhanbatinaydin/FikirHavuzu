@@ -38,6 +38,16 @@ namespace FikirHavuzu.Repository.Extensions
             return users.Where(u => u.UserPermissions.Any(up => up.PermissionId == permissionId.Value));
         }
 
+        public static IQueryable<User> FilteredByEmail(this IQueryable<User> users, string? email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return users;
+
+            var lowerCaseTerm = email.Trim().ToLower();
+
+            return users.Where(u => (u.Email).ToLower().Contains(lowerCaseTerm));
+        }
+
         public static IQueryable<User> ToPaginate(this IQueryable<User> users, int pageNumber, int pageSize)
         {
             return users

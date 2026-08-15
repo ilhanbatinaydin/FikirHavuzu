@@ -22,6 +22,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByIsApproved(p.IsApproved)
                 .FilteredByComment(p.Comment)
                 .FilteredByFullName(p.FullName)
+                .FilteredByEmail(p.Email)
                 .FilteredByDateRange(p.StartDate, p.EndDate)
                 .OrderByDescending(e => e.EvaluationDate)
                 .ToPaginate(p.PageNumber, p.PageSize)
@@ -36,6 +37,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByIsApproved(p.IsApproved)
                 .FilteredByComment(p.Comment)
                 .FilteredByFullName(p.FullName)
+                .FilteredByEmail(p.Email)
                 .FilteredByDateRange(p.StartDate, p.EndDate)
                 .CountAsync();
         }

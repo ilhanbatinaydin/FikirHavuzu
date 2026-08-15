@@ -58,5 +58,16 @@ namespace FikirHavuzu.Repository.Extensions
                 .Take(pageSize);
         }
 
+        // 6. Emaile göre filtreleme
+        public static IQueryable<Idea> FilteredByEmail(this IQueryable<Idea> ideas, string? email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return ideas;
+
+            var lowerCaseTerm = email.Trim().ToLower();
+
+            return ideas.Where(i => (i.User.Email).ToLower().Contains(lowerCaseTerm));
+        }
+
     }
 }

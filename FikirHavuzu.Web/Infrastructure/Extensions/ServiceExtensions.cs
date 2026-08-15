@@ -3,8 +3,11 @@ using FikirHavuzu.Repository.Contracts;
 using FikirHavuzu.Repository.Repositories;
 using FikirHavuzu.Service.Contracts;
 using FikirHavuzu.Service.Services;
+using FikirHavuzu.Web.Security.Handlers;
+using FikirHavuzu.Web.Security.Requirements;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using System.Security.Claims;
@@ -137,7 +140,12 @@ namespace FikirHavuzu.Web.Infrastructure.Extensions
 
                 options.AddPolicy("IdeaEvaluatePolicy", policy =>
                     policy.RequireClaim("Permission", "Idea.Evaluate"));
+
+                options.AddPolicy("ProfileAccessPolicy", policy =>
+                    policy.Requirements.Add(new ProfileAccessRequirement()));
             });
+
+            services.AddScoped<IAuthorizationHandler, ProfileAccessHandler>();
         }
 
         public static void ConfigureRouting(this IServiceCollection services)

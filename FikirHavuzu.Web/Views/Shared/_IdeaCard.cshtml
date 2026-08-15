@@ -28,13 +28,19 @@
         </div>
 
         <div class="card-footer bg-transparent border-top-0 d-flex justify-content-between align-items-center pb-3 pt-0 mt-auto">
-            <small class="text-muted" style="display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
-                <i class="fa-regular fa-user me-1"></i>@Model.AddedByUserFullName
-            </small>
+            <div class="overflow-hidden me-2" style="max-width: 65%;">
+                <small class="text-dark fw-semibold d-block text-truncate" title="@Model.AddedByUserFirstName @Model.AddedByUserLastName">
+                    <i class="fa-regular fa-user me-1 text-primary"></i>@Model.AddedByUserFirstName @Model.AddedByUserLastName
+                </small>
+                <small class="text-muted d-block text-truncate" style="font-size: 0.75rem;" title="@Model.AddedByUserEmail">
+                    <i class="fa-regular fa-envelope me-1"></i>@Model.AddedByUserEmail
+                </small>
+            </div>
 
             <a asp-controller="Idea" asp-action="Detail" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary text-nowrap">
                 Detay <i class="fa-solid fa-arrow-right ms-1"></i>
             </a>
         </div>
+
     </div>
 </div>

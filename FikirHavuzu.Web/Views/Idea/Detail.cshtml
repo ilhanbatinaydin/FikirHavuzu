@@ -53,7 +53,7 @@
 
                 <div class="row text-muted small">
                     <div class="col-md-6 mb-2 mb-md-0">
-                        <i class="fa-solid fa-user me-1"></i> <strong>Ekleyen:</strong> @Model.Idea.AddedByUserFullName (@Model.Idea.AddedByUserEmail)
+                        <i class="fa-solid fa-user me-1"></i> <strong>Ekleyen:</strong> @Model.Idea.AddedByUserFirstName @Model.Idea.AddedByUserLastName (@Model.Idea.AddedByUserEmail)
                     </div>
                     <div class="col-md-6 text-md-end">
                         <i class="fa-regular fa-calendar me-1"></i> <strong>Tarih:</strong> @Model.Idea.CreatedAt.ToString("dd.MM.yyyy HH:mm")
@@ -65,7 +65,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-3 mb-3">
         @await Component.InvokeAsync("EvaluationFilterMenu", new { ideaId = Model.Idea.Id })
     </div>
 

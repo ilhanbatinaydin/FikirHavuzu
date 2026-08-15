@@ -1,0 +1,98 @@
+﻿@model UserDto
+
+@{
+    ViewData["Title"] = "Kullanıcı Profili";
+}
+
+<div class="row mt-4">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm border-0 border-top border-4 border-primary h-100">
+            <div class="card-body text-center pt-5">
+                <div class="bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4 border shadow-sm" style="width: 120px; height: 120px;">
+                    <i class="fa-solid fa-user text-primary" style="font-size: 4rem;"></i>
+                </div>
+
+                <h4 class="fw-bold text-dark mb-1">@Model.FirstName @Model.LastName</h4>
+                <p class="text-muted mb-3"><i class="fa-solid fa-envelope me-2"></i>@Model.Email</p>
+
+                <div class="mb-4">
+                    @if (Model.IsActive)
+                    {
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success px-4 py-2 rounded-pill shadow-sm">
+                            <i class="fa-solid fa-check-circle me-1"></i> Aktif Kullanıcı
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger px-4 py-2 rounded-pill shadow-sm">
+                            <i class="fa-solid fa-circle-xmark me-1"></i> Pasif Kullanıcı
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+
+        <div class="card mb-4 shadow-sm border">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-4 border-bottom pb-3">
+                    <i class="fa-solid fa-address-card text-secondary fs-4 me-3"></i>
+                    <h5 class="fw-bold text-secondary mb-0">Kişisel ve Kurumsal Bilgiler</h5>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted fw-bold small"><i class="fa-solid fa-hashtag me-2"></i>T.C. Kimlik No</div>
+                    <div class="col-sm-8 text-dark">
+                        @Model.IdentityNumber
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted fw-bold small"><i class="fa-solid fa-id-badge me-2"></i>Kurum Sicil No</div>
+                    <div class="col-sm-8 text-dark">
+                        @Model.RegistrationNumber
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted fw-bold small"><i class="fa-solid fa-phone me-2"></i>Telefon Numarası</div>
+                    <div class="col-sm-8 text-dark">
+                        @Model.PhoneNumber
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm border-0 border-start border-4 border-warning">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <i class="fa-solid fa-shield-halved text-warning fs-4 me-3"></i>
+                    <h5 class="fw-bold text-secondary mb-0">Sistem Yetkileri</h5>
+                </div>
+
+                @if (Model.Permissions != null && Model.Permissions.Any())
+                {
+                    <p class="text-muted small mb-3">Bu kullanıcının sistem üzerinde sahip olduğu yetkiler aşağıda listelenmiştir:</p>
+
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var permission in Model.Permissions)
+                        {
+                            <span class="badge bg-light text-dark border px-3 py-2 rounded-pill shadow-sm">
+                                <i class="fa-solid fa-check text-success me-1"></i> @permission
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary mb-0 border-0" role="alert">
+                        <i class="fa-solid fa-circle-info me-2"></i> Bu kullanıcıya atanmış herhangi bir sistem yetkisi bulunmamaktadır.
+                    </div>
+                }
+            </div>
+        </div>
+
+    </div>
+</div>

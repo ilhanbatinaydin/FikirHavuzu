@@ -20,10 +20,13 @@ namespace FikirHavuzu.Web.Infrastructure.Mapper
             CreateMap<Permission, PermissionDto>();
 
             CreateMap<Idea, IdeaDto>()
-                .ForMember(dest => dest.AddedByUserFullName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName));
+                .ForMember(dest => dest.AddedByUserFirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForMember(dest => dest.AddedByUserLastName, opt => opt.MapFrom(src => src.User.LastName))
+                .ForMember(dest => dest.AddedByUserEmail, opt => opt.MapFrom(src => src.User.Email));
 
             CreateMap<Idea, IdeaDetailDto>()
-                .ForMember(dest => dest.AddedByUserFullName, opt => opt.MapFrom(src => src.User.FirstName + " " + src.User.LastName))
+                .ForMember(dest => dest.AddedByUserFirstName, opt => opt.MapFrom(src => src.User.FirstName))
+                .ForMember(dest => dest.AddedByUserLastName, opt => opt.MapFrom(src => src.User.LastName))
                 .ForMember(dest => dest.AddedByUserEmail, opt => opt.MapFrom(src => src.User.Email));
 
             CreateMap<IdeaCreateDto, Idea>();
@@ -59,7 +62,8 @@ namespace FikirHavuzu.Web.Infrastructure.Mapper
             CreateMap<UserPermissionAssignmentDto, UserPermissionAssignmentViewModel>();
 
             CreateMap<Evaluation, EvaluationDto>()
-                .ForMember(dest => dest.EvaluatorFullName, opt => opt.MapFrom(src => src.EvaluatedByUser.FirstName + " " + src.EvaluatedByUser.LastName))
+                .ForMember(dest => dest.EvaluatorFirstName, opt => opt.MapFrom(src => src.EvaluatedByUser.FirstName))
+                .ForMember(dest => dest.EvaluatorLastName, opt => opt.MapFrom(src => src.EvaluatedByUser.LastName))
                 .ForMember(dest => dest.EvaluatorEmail, opt => opt.MapFrom(src => src.EvaluatedByUser.Email));
 
             CreateMap<EvaluationCreateDto, Evaluation>();

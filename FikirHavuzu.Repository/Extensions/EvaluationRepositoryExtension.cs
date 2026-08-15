@@ -54,6 +54,16 @@ namespace FikirHavuzu.Repository.Extensions
             return evaluations;
         }
 
+        public static IQueryable<Evaluation> FilteredByEmail(this IQueryable<Evaluation> evaluations, string? email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+                return evaluations;
+
+            var lowerCaseTerm = email.Trim().ToLower();
+
+            return evaluations.Where(e => (e.EvaluatedByUser.Email).ToLower().Contains(lowerCaseTerm));
+        }
+
         public static IQueryable<Evaluation> ToPaginate(this IQueryable<Evaluation> evaluations, int pageNumber, int pageSize)
         {
             return evaluations

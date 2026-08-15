@@ -22,6 +22,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)
                 .FilteredByDateRange(p.StartDate, p.EndDate)
+                .FilteredByEmail(p.Email)
                 .OrderByDescending(i => i.Id)
                 .ToPaginate(p.PageNumber, p.PageSize)
                 .ToListAsync();
@@ -33,6 +34,7 @@ namespace FikirHavuzu.Repository.Repositories
                 .FilteredByCategoryId(p.CategoryId)
                 .FilteredBySearchQuery(p.SearchQuery)
                 .FilteredByFullName(p.FullName)
+                .FilteredByEmail(p.Email)
                 .FilteredByDateRange(p.StartDate, p.EndDate)
                 .CountAsync();
         }

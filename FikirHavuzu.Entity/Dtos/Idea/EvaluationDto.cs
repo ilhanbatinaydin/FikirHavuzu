@@ -9,7 +9,8 @@
         public DateTime EvaluationDate { get; set; }
         public int IdeaId { get; set; }
         public int EvaluatedByUserId { get; set; }
-        public string EvaluatorFullName { get; set; } = string.Empty;
+        public string EvaluatorFirstName { get; set; } = string.Empty;
+        public string EvaluatorLastName { get; set; } = string.Empty;
         public string EvaluatorEmail {  get; set; } = string.Empty;
     }
 }

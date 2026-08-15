@@ -4,6 +4,8 @@
     {
         public string? SearchQuery { get; set; }
 
+        public string? Email { get; set; }
+
         public string? FullName { get; set; }
 
         public int? CategoryId { get; set; }
@@ -12,7 +14,7 @@
 
         public DateTime? EndDate { get; set; }
 
-        private int _pageSize = 5;
+        private int _pageSize = 9;
 
         public int PageSize
         {

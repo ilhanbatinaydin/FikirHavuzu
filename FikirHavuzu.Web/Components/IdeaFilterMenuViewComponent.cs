@@ -22,9 +22,10 @@ namespace FikirHavuzu.Web.Components
 
             var viewModel = new IdeaFilterViewModel
             {
-                SearchQuery = requestQuery["searchQuery"],
-                FullName = requestQuery["fullName"],
-                CategoryId = int.TryParse(requestQuery["categoryId"], out int catId) ? catId : null,
+                SearchQuery = requestQuery["SearchQuery"],
+                FullName = requestQuery["FullName"],
+                Email= requestQuery["Email"],
+                CategoryId = int.TryParse(requestQuery["CategoryId"], out int catId) ? catId : null,
                 StartDate = DateTime.TryParse(requestQuery["StartDate"], out DateTime sDate) ? sDate : null,
                 EndDate = DateTime.TryParse(requestQuery["EndDate"], out DateTime eDate) ? eDate : null
             };

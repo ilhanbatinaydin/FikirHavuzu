@@ -34,6 +34,11 @@
             <input type="text" asp-for="FullName" class="form-control form-control-sm" placeholder="Ad soyad ...">
         </div>
 
+        <div class="mb-3">
+            <label asp-for="Email" class="form-label text-muted small fw-bold">Ekleyen Kişi (E-Mail)</label>
+            <input type="text" asp-for="Email" class="form-control form-control-sm" placeholder="E-Mail ...">
+        </div>
+
         <div class="d-grid gap-2">
             <button type="button"
                     hx-get="@Url.Action("Index", "Home")"

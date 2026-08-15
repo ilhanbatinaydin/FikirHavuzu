@@ -7,10 +7,11 @@
         public bool? IsApproved { get; set; }
         public string? Comment { get; set; }
         public string? FullName { get; set; }
+        public string? Email { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
 
-        private int _pageSize = 1;
+        private int _pageSize = 10;
         public int PageSize
         {
             get { return _pageSize; }

@@ -1,4 +1,6 @@
-﻿<div class="p-3 bg-white rounded-3 shadow-sm border">
+﻿@model EvaluationFilterViewModel
+
+<div class="p-3 bg-white rounded-3 shadow-sm border">
     <h5 class="fw-bold text-primary border-bottom pb-3">
         <i class="fa-solid fa-filter"></i>
         Filtreler
@@ -7,37 +9,42 @@
     <form method="get" asp-controller="Idea" asp-action="Detail" asp-route-id="@Model.IdeaId">
 
         <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">Değerlendiren</label>
-            <input type="text" name="FullName" value="@Context.Request.Query["FullName"]" class="form-control form-control-sm" placeholder="Ad Soyad ..." />
+            <label asp-for="FullName" class="form-label text-muted small fw-bold">Değerlendiren</label>
+            <input type="text" asp-for="FullName" class="form-control form-control-sm" placeholder="Ad Soyad ..." />
         </div>
 
         <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">İçerik</label>
-            <input type="text" name="Comment" value="@Context.Request.Query["Comment"]" class="form-control form-control-sm" placeholder="Yorumlarda ara ..." />
+            <label asp-for="Email" class="form-label text-muted small fw-bold">Değerlendiren (E-Mail)</label>
+            <input type="text" asp-for="Email" class="form-control form-control-sm" placeholder="E-Mail ..." />
         </div>
 
         <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">Net Puan</label>
-            <input type="number" name="Score" value="@Context.Request.Query["Score"]" class="form-control form-control-sm" placeholder="Örn: 5" min="1" max="10" />
+            <label asp-for="Comment" class="form-label text-muted small fw-bold">İçerik</label>
+            <input type="text" asp-for="Comment" class="form-control form-control-sm" placeholder="Yorumlarda ara ..." />
         </div>
 
         <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">Durum</label>
-            <select name="IsApproved" class="form-select form-select-sm">
+            <label asp-for="Score" class="form-label text-muted small fw-bold">Net Puan</label>
+            <input type="number" asp-for="Score" class="form-control form-control-sm" placeholder="Örn: 5" min="1" max="5" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="IsApproved" class="form-label text-muted small fw-bold">Durum</label>
+            <select asp-for="IsApproved" class="form-select form-select-sm">
                 <option value="">Tümü</option>
-                <option value="true" selected="@(Context.Request.Query["IsApproved"] == "true" ? "selected" : null)">Onaylı</option>
-                <option value="false" selected="@(Context.Request.Query["IsApproved"] == "false" ? "selected" : null)">Ret</option>
+                <option value="true">Onaylı</option>
+                <option value="false">Ret</option>
             </select>
         </div>
 
         <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">Başlangıç Tarihi</label>
-            <input type="date" name="StartDate" value="@Context.Request.Query["StartDate"]" class="form-control form-control-sm" />
+            <label asp-for="StartDate" class="form-label text-muted small fw-bold">Başlangıç Tarihi</label>
+            <input type="date" asp-for="StartDate" class="form-control form-control-sm" />
         </div>
 
         <div class="mb-3">
-            <label class="form-label text-muted small fw-bold">Bitiş Tarihi</label>
-            <input type="date" name="EndDate" value="@Context.Request.Query["EndDate"]" class="form-control form-control-sm" />
+            <label asp-for="EndDate" class="form-label text-muted small fw-bold">Bitiş Tarihi</label>
+            <input type="date" asp-for="EndDate" class="form-control form-control-sm" />
         </div>
 
         <div class="d-grid gap-2">

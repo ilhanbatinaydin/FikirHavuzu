@@ -18,6 +18,7 @@ namespace FikirHavuzu.Repository.Repositories
         {
             return await FindAll(trackChanges)
                 .FilteredByFullName(p.FullName)
+                .FilteredByEmail(p.Email)
                 .FilteredByIdentityNumber(p.IdentityNumber)
                 .FilteredByActiveStatus(p.IsActive)
                 .FilteredByPermissionId(p.PermissionId)
@@ -32,6 +33,7 @@ namespace FikirHavuzu.Repository.Repositories
         {
             return await FindAll(false)
                 .FilteredByFullName(p.FullName)
+                .FilteredByEmail(p.Email)
                 .FilteredByIdentityNumber(p.IdentityNumber)
                 .FilteredByActiveStatus(p.IsActive)
                 .FilteredByPermissionId(p.PermissionId)
@@ -55,7 +57,9 @@ namespace FikirHavuzu.Repository.Repositories
         public async Task<User> GetOneUserByIdAsync(int id, bool trackChanges)
         {
             return await FindByCondition(u => u.Id == id, trackChanges)
-                        .SingleOrDefaultAsync();
+                .Include(u => u.UserPermissions)
+                    .ThenInclude(up => up.Permission)
+                .SingleOrDefaultAsync();
         }
 
         public async Task<User> GetUserByConditionAsync(Expression<Func<User, bool>> expression, bool trackChanges)

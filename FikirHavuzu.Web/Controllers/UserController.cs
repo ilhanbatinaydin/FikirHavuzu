@@ -7,18 +7,21 @@ using FikirHavuzu.Web.Models;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace FikirHavuzu.Web.Controllers
 {
     public class UserController : Controller
     {
         private readonly IServiceManager _manager;
-
+        private readonly IAuthorizationService _authorizationService;
         private readonly IMapper _mapper;
-        public UserController(IServiceManager manager, IMapper mapper)
+
+        public UserController(IServiceManager manager, IMapper mapper, IAuthorizationService authorizationService)
         {
             _manager = manager;
-            _mapper= mapper;
+            _mapper = mapper;
+            _authorizationService = authorizationService;
         }
 
         [HttpGet]
@@ -97,6 +100,7 @@ namespace FikirHavuzu.Web.Controllers
 
         [HttpGet]
         [Authorize(Policy = "UserManagePolicy")]
+        [Route("user/{id}/update")]
         public async Task<IActionResult> Update(int id)
         {
             try
@@ -156,6 +160,7 @@ namespace FikirHavuzu.Web.Controllers
 
         [HttpGet]
         [Authorize(Policy = "PermissionManagePolicy")]
+        [Route("user/{id}/managepermissions")]
         public async Task<IActionResult> ManagePermissions(int id)
         {
             try
@@ -206,6 +211,37 @@ namespace FikirHavuzu.Web.Controllers
             {
                 ModelState.AddModelError(string.Empty, "Yetkilendirme işlemi sırasında sunucu kaynaklı beklenmeyen bir hata oluştu.");
                 return View(model);
+            }
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("user/{id}/profile")]
+        public async Task<IActionResult> Profile(int id)
+        {
+            try
+            {
+                var userDto = await _manager.UserService.GetOneUserByIdAsync(id, false);
+
+                var authResult = await _authorizationService.AuthorizeAsync(User, userDto, "ProfileAccessPolicy");
+
+                if (!authResult.Succeeded)
+                {
+                    TempData["ErrorMessage"] = "Başka bir kullanıcının profilini görüntüleme yetkiniz bulunmamaktadır.";
+                    return RedirectToAction("Index", "Home");
+                }
+
+                return View(userDto);
+            }
+            catch (NotFoundException ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception)
+            {
+                TempData["ErrorMessage"] = "Kullanıcı bilgileri yüklenirken sistemsel bir hata oluştu.";
+                return RedirectToAction("Index", "Home");
             }
         }
     }

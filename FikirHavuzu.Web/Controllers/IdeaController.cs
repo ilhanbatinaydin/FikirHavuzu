@@ -107,6 +107,7 @@ namespace FikirHavuzu.Controllers
 
         [HttpGet]
         [Authorize(Policy = "IdeaViewPolicy")]
+        [Route("idea/{id}/detail")]
         public async Task<IActionResult> Detail(int id, EvaluationRequestParameters evalParams)
         {
             if (Request.Headers.ContainsKey("HX-Request"))

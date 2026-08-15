@@ -28,6 +28,7 @@
                     var firstName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
                     var lastName = User.FindFirst(System.Security.Claims.ClaimTypes.Surname)?.Value;
                     var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userProfileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -39,6 +40,15 @@
                                 <span class="d-block fw-bold text-dark">@firstName @lastName</span>
                                 <small class="text-muted">@email</small>
                             </li>
+
+                            <li>
+                                <a class="dropdown-item d-flex align-items-center py-2" asp-controller="User" asp-action="Profile" asp-route-id="@userId">
+                                    <i class="fa-solid fa-id-card text-primary me-2"></i>
+                                    Profilim
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider m-0"></li>
 
                             <li>
                                 <form asp-controller="Auth" asp-action="Logout" method="post" class="m-0 p-0">
