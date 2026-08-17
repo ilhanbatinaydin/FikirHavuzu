@@ -43,7 +43,17 @@
                 <div class="mb-4">
                     <label class="form-label fw-bold"><i class="fa-solid fa-paperclip text-secondary me-2"></i>Destekleyici Belgeler (İsteğe Bağlı)</label>
                     <input type="file" asp-for="Documents" id="documentInput" class="form-control" multiple accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" />
-                    <span asp-validation-for="Documents" class="text-danger small d-block mt-1"></span>
+                    @if (ViewData.ModelState.TryGetValue("Documents", out var docEntry) && docEntry.Errors.Any())
+                    {
+                        <div class="mt-2 d-flex flex-column gap-1">
+                            @foreach (var error in docEntry.Errors)
+                            {
+                                <span class="text-danger small fw-semibold">
+                                    <i class="fa-solid fa-circle-exclamation me-1"></i>@error.ErrorMessage
+                                </span>
+                            }
+                        </div>
+                    }
                     <div class="form-text text-muted mb-2">
                         Maksimum 5MB büyüklüğünde PDF, Word veya Görsel dosyaları yükleyebilirsiniz. Birden fazla dosya seçebilirsiniz.
                     </div>
@@ -61,7 +71,5 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-
     <script src="~/js/custom-file-upload.js" asp-append-version="true"></script>
 }

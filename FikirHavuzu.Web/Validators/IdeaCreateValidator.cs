@@ -26,20 +26,28 @@ namespace FikirHavuzu.Web.Validators
             RuleFor(x => x.CategoryId)
                 .NotNull().WithMessage("Lütfen fikrinize en uygun kategoriyi seçiniz.");
 
-            When(x => x.Documents != null && x.Documents.Any(), () =>
-            {
-                RuleForEach(x => x.Documents)
-                    .Must(file => file.Length <= 5 * 1024 * 1024)
-                    .WithMessage((model, file) => $"'{file.FileName}' adlı dosya 5MB boyutunu aşıyor.")
+            RuleFor(x => x.Documents)
+                .Custom((documents, context) =>
+                {
+                    if (documents == null || !documents.Any())
+                        return;
 
-                    .Must(file =>
+                    var allowedExtensions = new[] { ".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg" };
+
+                    foreach (var file in documents)
                     {
-                        var allowedExtensions = new[] { ".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg" };
-                        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
-                        return allowedExtensions.Contains(extension);
-                    })
-                    .WithMessage((model, file) => $"'{file.FileName}' desteklenmeyen bir dosya formatı. (Sadece PDF, Word ve Görseller)");
-            });
+                        if (file.Length > 5 * 1024 * 1024)
+                        {
+                            context.AddFailure(nameof(IdeaCreateViewModel.Documents), $"'{file.FileName}' adlı dosya 5MB boyutunu aşıyor.");
+                        }
+
+                        var extension = Path.GetExtension(file.FileName)?.ToLowerInvariant();
+                        if (string.IsNullOrEmpty(extension) || !allowedExtensions.Contains(extension))
+                        {
+                            context.AddFailure(nameof(IdeaCreateViewModel.Documents), $"'{file.FileName}' desteklenmeyen bir dosya formatı. (Sadece PDF, Word ve Görseller)");
+                        }
+                    }
+                });
         }
     }
 }

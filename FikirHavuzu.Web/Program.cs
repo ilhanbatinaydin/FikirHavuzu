@@ -10,7 +10,11 @@ namespace FikirHavuzu.Web
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddControllersWithViews();
+            builder.Services.AddControllersWithViews(options =>
+            {
+                options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true;
+            });
+
             builder.Services.AddValidatorsFromAssemblyContaining<Program>();
             builder.Services.AddAutoMapper(typeof(Program));
 

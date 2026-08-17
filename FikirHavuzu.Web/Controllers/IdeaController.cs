@@ -49,6 +49,7 @@ namespace FikirHavuzu.Controllers
                 {
                     ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
+
                 var categories = await _manager.CategoryService.GetAllCategoriesAsync(false);
                 model.CategoryList = new SelectList(categories, "Id", "Name");
                 return View(model);
@@ -120,7 +121,6 @@ namespace FikirHavuzu.Controllers
             try
             {
                 var idea = await _manager.IdeaService.GetIdeaByIdWithDetailsAsync(id, trackChanges: false);
-
                 var model = new IdeaDetailViewModel
                 {
                     Idea = idea

@@ -33,8 +33,12 @@ namespace FikirHavuzu.Web.Controllers
 
             if (!validationResult.IsValid)
             {
-                TempData["ErrorMessage"] = validationResult.Errors.First().ErrorMessage;
-                return RedirectToAction("Detail", "Idea", new { id = newEvaluation.IdeaId });
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return PartialView("_EvaluationCreatePartial", newEvaluation);
             }
 
             try
@@ -44,18 +48,28 @@ namespace FikirHavuzu.Web.Controllers
 
                 await _manager.EvaluationService.CreateEvaluationAsync(evaluationDto, userId);
 
-                TempData["SuccessMessage"] = "Değerlendirmeniz başarıyla sisteme eklenmiştir!";
-                return RedirectToAction("Detail", "Idea", new { id = newEvaluation.IdeaId });
+                Response.Headers.Append("HX-Trigger", "refreshEvaluations");
+
+                ModelState.Clear();
+
+                var cleanModel = new EvaluationCreateViewModel
+                {
+                    IdeaId = newEvaluation.IdeaId,
+                    IsApproved = true
+                };
+
+                ViewBag.SuccessMessage = "Değerlendirmeniz başarıyla sisteme eklendi!";
+                return PartialView("_EvaluationCreatePartial", cleanModel);
             }
             catch (NotFoundException ex)
             {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Detail", "Idea", new { id = newEvaluation.IdeaId });
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return PartialView("_EvaluationCreatePartial", newEvaluation);
             }
             catch (Exception)
             {
-                TempData["ErrorMessage"] = "Değerlendirmeniz kaydedilirken bir sistem hatası oluştu.";
-                return RedirectToAction("Detail", "Idea", new { id = newEvaluation.IdeaId });
+                ModelState.AddModelError(string.Empty, "Değerlendirmeniz kaydedilirken sistemsel bir hata oluştu.");
+                return PartialView("_EvaluationCreatePartial", newEvaluation);
             }
         }
     }

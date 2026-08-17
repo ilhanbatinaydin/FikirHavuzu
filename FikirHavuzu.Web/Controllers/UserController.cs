@@ -125,6 +125,7 @@ namespace FikirHavuzu.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "UserManagePolicy")]
+        [Route("user/{id}/update")]
         public async Task<IActionResult> Update(UserUpdateViewModel model, [FromServices] IValidator<UserUpdateViewModel> validator)
         {
             var validationResult = await validator.ValidateAsync(model);
@@ -184,6 +185,7 @@ namespace FikirHavuzu.Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Policy = "PermissionManagePolicy")]
+        [Route("user/{id}/managepermissions")]
         public async Task<IActionResult> ManagePermissions(UserPermissionAssignmentViewModel model)
         {
             if (!ModelState.IsValid)

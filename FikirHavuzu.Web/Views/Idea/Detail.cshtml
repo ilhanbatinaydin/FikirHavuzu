@@ -73,47 +73,8 @@
 
         @if (hasEvaluatePermission)
         {
-            <div class="card mb-4 shadow-sm border-0 border-primary border-start border-4">
-                <div class="card-header bg-white border-bottom-0 pt-3">
-                    <h5 class="fw-bold text-primary"><i class="fa-solid fa-comment-medical me-2"></i>Bu Fikri Değerlendir</h5>
-                </div>
-                <div class="card-body">
-                    <form asp-controller="Evaluation" asp-action="Create" method="post">
-                        <input type="hidden" asp-for="NewEvaluation.IdeaId" value="@Model.Idea.Id" />
-
-                        <div class="row">
-                            <div class="col-md-4 mb-3">
-                                <label asp-for="NewEvaluation.Score" class="form-label text-muted fw-bold small">Puan (1-5)</label>
-                                <div class="input-group">
-                                    <span class="input-group-text bg-white"><i class="fa-solid fa-star text-warning"></i></span>
-                                    <input asp-for="NewEvaluation.Score" type="number" min="1" max="5" class="form-control" required />
-                                </div>
-                                <span asp-validation-for="NewEvaluation.Score" class="text-danger small"></span>
-                            </div>
-                            <div class="col-md-4 mb-3">
-                                <label asp-for="NewEvaluation.IsApproved" class="form-label text-muted fw-bold small">Durum</label>
-                                <select asp-for="NewEvaluation.IsApproved" class="form-select">
-                                    <option value="true">Onaylıyorum (Olumlu)</option>
-                                    <option value="false">Onaylamıyorum (Olumsuz)</option>
-                                </select>
-                                <span asp-validation-for="NewEvaluation.IsApproved" class="text-danger small"></span>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label asp-for="NewEvaluation.Comment" class="form-label text-muted fw-bold small">Yorumunuz</label>
-                            <textarea asp-for="NewEvaluation.Comment" class="form-control" rows="3" required></textarea>
-                            <span asp-validation-for="NewEvaluation.Comment" class="text-danger small"></span>
-                        </div>
-
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-outline-success fw-bold shadow-sm">
-                                Gönder
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            <partial name="_EvaluationCreatePartial"
+                     model="new EvaluationCreateViewModel { IdeaId = Model.Idea.Id }" />
         }
         else
         {
@@ -142,12 +103,11 @@
             };
         }
 
-        <div id="evaluation-list-container">
+        <div id="evaluation-list-container"
+             hx-get="@Url.Action("Detail", "Idea", new { id = Model.Idea.Id })"
+             hx-trigger="refreshEvaluations from:body"
+             hx-swap="innerHTML">
             @await Component.InvokeAsync("EvaluationList", new { parameters = requestParams })
         </div>
     </div>
 </div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}

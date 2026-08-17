@@ -42,7 +42,7 @@ namespace FikirHavuzu.Repository.Repositories
 
         public async Task<User?> GetUserWithPermissionsByEmailAsync(string email, bool trackChanges)
         {
-            return await FindByCondition(u => u.Email == email && u.IsActive, trackChanges)
+            return await FindByCondition(u => u.Email == email, trackChanges)
                 .Include(u => u.UserPermissions)
                     .ThenInclude(up => up.Permission)
                 .FirstOrDefaultAsync();

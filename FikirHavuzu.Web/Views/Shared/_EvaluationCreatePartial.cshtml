@@ -1,0 +1,62 @@
+﻿@model EvaluationCreateViewModel
+
+<div id="evaluation-form-container" class="card mb-4 shadow-sm border-0 border-primary border-start border-4">
+    <div class="card-header bg-white border-bottom-0 pt-3">
+        <h5 class="fw-bold text-primary mb-0"><i class="fa-solid fa-comment-medical me-2"></i>Bu Fikri Değerlendir</h5>
+    </div>
+    <div class="card-body">
+
+        @if (ViewBag.SuccessMessage != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm border-0 border-start border-4 border-success mb-3" role="alert">
+                <i class="fa-solid fa-circle-check me-2"></i> @ViewBag.SuccessMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <form hx-post="@Url.Action("Create", "Evaluation")"
+              hx-target="#evaluation-form-container"
+              hx-swap="outerHTML"
+              method="post">
+
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="IdeaId" />
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="evaluationScore" class="form-label text-muted fw-bold small">Puanınız</label>
+                    <select asp-for="Score" id="evaluationScore" class="form-select">
+                        <option value="">-- Lütfen Puan Seçiniz --</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 - Mükemmel)</option>
+                        <option value="4">⭐⭐⭐⭐ (4 - Çok İyi)</option>
+                        <option value="3">⭐⭐⭐ (3 - Orta)</option>
+                        <option value="2">⭐⭐ (2 - Geliştirilmeli)</option>
+                        <option value="1">⭐ (1 - Yetersiz)</option>
+                    </select>
+                    <span asp-validation-for="Score" class="text-danger small d-block mt-1"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="evaluationApproval" class="form-label text-muted fw-bold small">Değerlendirme Sonucu</label>
+                    <select asp-for="IsApproved" id="evaluationApproval" class="form-select">
+                        <option value="true">Onaylıyorum (Olumlu)</option>
+                        <option value="false">Onaylamıyorum (Olumsuz)</option>
+                    </select>
+                    <span asp-validation-for="IsApproved" class="text-danger small d-block mt-1"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="evaluationComment" class="form-label text-muted fw-bold small">Yorumunuz</label>
+                <textarea asp-for="Comment" id="evaluationComment" class="form-control" rows="3" placeholder="Fikir hakkındaki görüş ve gerekçelerinizi yazınız..."></textarea>
+                <span asp-validation-for="Comment" class="text-danger small d-block mt-1"></span>
+            </div>
+
+            <div class="text-end">
+                <button type="submit" class="btn btn-outline-success fw-bold shadow-sm">
+                    <i class="fa-solid fa-paper-plane me-1"></i> Gönder
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
