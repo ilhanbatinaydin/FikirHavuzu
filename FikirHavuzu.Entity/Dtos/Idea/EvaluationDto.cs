@@ -7,13 +7,9 @@
         public int Score { get; set; }
         public string Comment { get; set; } = string.Empty;
         public DateTime EvaluationDate { get; set; }
-
-        // Fikir Bilgileri
         public int IdeaId { get; set; }
         public string IdeaTitle { get; set; } = string.Empty;
         public string CategoryName { get; set; } = string.Empty;
-
-        // Değerlendiren Kullanıcı Bilgileri
         public int EvaluatedByUserId { get; set; }
         public string EvaluatorFirstName { get; set; } = string.Empty;
         public string EvaluatorLastName { get; set; } = string.Empty;

@@ -5,7 +5,6 @@
         <div class="card-body">
             <div class="row align-items-center">
 
-                <!-- SOL: Değerlendiren Kullanıcı Bilgisi (col-md-4) -->
                 <div class="col-md-4 mb-3 mb-md-0">
                     <div class="d-flex align-items-center">
                         <div class="bg-light text-secondary rounded-circle d-flex align-items-center justify-content-center me-3 border shadow-sm" style="width: 50px; height: 50px; min-width: 50px;">
@@ -25,7 +24,6 @@
                     </div>
                 </div>
 
-                <!-- ORTA: Yorum İçeriği (col-md-6) -->
                 <div class="col-md-6 mb-3 mb-md-0">
                     @{
                         var comment = Model.Comment ?? "";
@@ -34,26 +32,25 @@
 
                     @if (comment.Length > maxLength)
                     {
-                        var uniqueId = Guid.NewGuid().ToString("N");
                         var shortText = comment.Substring(0, maxLength) + "...";
 
                         <div>
-                            <div id="short-@uniqueId">
+                            <div id="short-@Model.Id">
                                 <p class="mb-0 text-muted fst-italic">
                                     "@shortText"
-                                    <a href="#full-@uniqueId" data-bs-toggle="collapse"
-                                       onclick="document.getElementById('short-@uniqueId').classList.add('d-none');"
+                                    <a href="#full-@Model.Id" data-bs-toggle="collapse"
+                                       onclick="document.getElementById('short-@Model.Id').classList.add('d-none');"
                                        class="text-decoration-none small text-primary fw-bold ms-1">
                                         Devamını Oku <i class="fa-solid fa-angle-down"></i>
                                     </a>
                                 </p>
                             </div>
 
-                            <div class="collapse" id="full-@uniqueId">
+                            <div class="collapse" id="full-@Model.Id">
                                 <p class="mb-0 text-muted fst-italic">
                                     "@comment"
-                                    <a href="#full-@uniqueId" data-bs-toggle="collapse"
-                                       onclick="document.getElementById('short-@uniqueId').classList.remove('d-none');"
+                                    <a href="#full-@Model.Id" data-bs-toggle="collapse"
+                                       onclick="document.getElementById('short-@Model.Id').classList.remove('d-none');"
                                        class="text-decoration-none small text-danger fw-bold ms-1">
                                         Gizle <i class="fa-solid fa-angle-up"></i>
                                     </a>
@@ -67,7 +64,6 @@
                     }
                 </div>
 
-                <!-- SAĞ: Puan ve Durum (col-md-2) -->
                 <div class="col-md-2 text-md-end">
                     <div class="mb-2">
                         <span class="badge bg-warning text-dark border border-warning rounded-pill">
