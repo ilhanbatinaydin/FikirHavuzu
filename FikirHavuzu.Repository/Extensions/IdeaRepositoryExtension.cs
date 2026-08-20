@@ -4,7 +4,6 @@ namespace FikirHavuzu.Repository.Extensions
 {
     public static class IdeaRepositoryExtension
     {
-        // 1. Kategoriye Göre Filtreleme
         public static IQueryable<Idea> FilteredByCategoryId(this IQueryable<Idea> ideas, int? categoryId)
         {
             if (categoryId is null)
@@ -13,7 +12,6 @@ namespace FikirHavuzu.Repository.Extensions
             return ideas.Where(i => i.CategoryId == categoryId);
         }
 
-        // 2. Fikir Başlığı veya Açıklamasında Arama
         public static IQueryable<Idea> FilteredBySearchQuery(this IQueryable<Idea> ideas, string? searchQuery)
         {
             if (string.IsNullOrWhiteSpace(searchQuery))
@@ -26,7 +24,6 @@ namespace FikirHavuzu.Repository.Extensions
                                     i.Description.ToLower().Contains(lowerCaseTerm));
         }
 
-        // 3. Ekleyen Kişinin Adı ve Soyadına Göre Arama
         public static IQueryable<Idea> FilteredByFullName(this IQueryable<Idea> ideas, string? fullName)
         {
             if (string.IsNullOrWhiteSpace(fullName))
@@ -34,11 +31,9 @@ namespace FikirHavuzu.Repository.Extensions
 
             var lowerCaseName = fullName.Trim().ToLower();
 
-            // EF Core arkada FirstName ve LastName'i birleştirip arama yapar
             return ideas.Where(i => (i.User.FirstName + " " + i.User.LastName).ToLower().Contains(lowerCaseName));
         }
 
-        // 4. Tarihe Göre Filtreleme
         public static IQueryable<Idea> FilteredByDateRange(this IQueryable<Idea> ideas, DateTime? startDate, DateTime? endDate)
         {
             if (startDate.HasValue)
@@ -50,7 +45,6 @@ namespace FikirHavuzu.Repository.Extensions
             return ideas;
         }
 
-        // 5. Sayfalama (Pagination)
         public static IQueryable<Idea> ToPaginate(this IQueryable<Idea> ideas, int pageNumber, int pageSize)
         {
             return ideas
@@ -58,7 +52,6 @@ namespace FikirHavuzu.Repository.Extensions
                 .Take(pageSize);
         }
 
-        // 6. Emaile göre filtreleme
         public static IQueryable<Idea> FilteredByEmail(this IQueryable<Idea> ideas, string? email)
         {
             if (string.IsNullOrWhiteSpace(email))

@@ -45,7 +45,6 @@ namespace FikirHavuzu.Web.Infrastructure.TagHelpers
                 int startPage = Math.Max(1, PageModel.CurrentPage - (visiblePages / 2));
                 int endPage = Math.Min(PageModel.TotalPages, startPage + visiblePages - 1);
 
-                // Ufak bir düzeltme: Eğer son sayfalardaysak başlangıcı geriye çek ki her zaman 'visiblePages' kadar buton görünsün
                 if (endPage - startPage + 1 < visiblePages)
                 {
                     startPage = Math.Max(1, endPage - visiblePages + 1);
@@ -126,7 +125,6 @@ namespace FikirHavuzu.Web.Infrastructure.TagHelpers
         private TagBuilder CreateEllipsisTag()
         {
             TagBuilder tag = new TagBuilder("span");
-            // Tıklanamaz ve biraz soluk görünmesi için Bootstrap sınıfları
             tag.AddCssClass(PageClass);
             tag.AddCssClass("disabled text-muted");
             tag.InnerHtml.Append("...");

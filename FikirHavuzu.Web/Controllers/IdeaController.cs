@@ -111,19 +111,21 @@ namespace FikirHavuzu.Controllers
         [Route("idea/{id}/detail")]
         public async Task<IActionResult> Detail(int id, EvaluationRequestParameters evalParams)
         {
+            evalParams.IdeaId = id;
+
             if (Request.Headers.ContainsKey("HX-Request"))
             {
-                evalParams.IdeaId = id;
                 return ViewComponent("EvaluationList", new { parameters = evalParams });
             }
-
 
             try
             {
                 var idea = await _manager.IdeaService.GetIdeaByIdWithDetailsAsync(id, trackChanges: false);
+
                 var model = new IdeaDetailViewModel
                 {
-                    Idea = idea
+                    Idea = idea,
+                    EvaluationParameters = evalParams
                 };
 
                 return View(model);

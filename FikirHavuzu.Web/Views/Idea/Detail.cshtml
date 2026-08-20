@@ -89,25 +89,11 @@
             </h5>
         </div>
 
-        @{
-            var requestParams = new FikirHavuzu.Entity.RequestParameters.EvaluationRequestParameters
-            {
-                IdeaId = Model.Idea.Id,
-                PageNumber = int.TryParse(Context.Request.Query["pageNumber"], out int p) ? p : 1,
-                Score = int.TryParse(Context.Request.Query["Score"], out int s) ? s : null,
-                IsApproved = bool.TryParse(Context.Request.Query["IsApproved"], out bool isApp) ? isApp : null,
-                Comment = Context.Request.Query["Comment"],
-                FullName = Context.Request.Query["FullName"],
-                StartDate = DateTime.TryParse(Context.Request.Query["StartDate"], out DateTime sd) ? sd : null,
-                EndDate = DateTime.TryParse(Context.Request.Query["EndDate"], out DateTime ed) ? ed : null
-            };
-        }
-
         <div id="evaluation-list-container"
              hx-get="@Url.Action("Detail", "Idea", new { id = Model.Idea.Id })"
              hx-trigger="refreshEvaluations from:body"
              hx-swap="innerHTML">
-            @await Component.InvokeAsync("EvaluationList", new { parameters = requestParams })
+            @await Component.InvokeAsync("EvaluationList", new { parameters = Model.EvaluationParameters })
         </div>
     </div>
 </div>
